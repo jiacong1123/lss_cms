@@ -1,0 +1,159 @@
+@import '~themes/vars.less';
+
+.globalHeader{
+    height: 72px;
+    padding: 0;
+    background: #fff;
+    box-shadow: 4px 4px 40px 0 rgba(0,0,0,.05);
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 21;
+    transition: width .2s;
+    :global {
+      .ant-menu-submenu-title {
+        height: 72px;
+        &:hover span {
+          color: @primary-color;
+        }
+      }
+
+      .ant-menu-horizontal {
+        line-height: 72px;
+
+        & > .ant-menu-submenu:hover {
+          color: @primary-color;
+          background-color: @hover-color;
+        }
+      }
+      .ant-menu {
+        border-bottom: none;
+        height: 72px;
+
+      }
+
+      .ant-menu-horizontal > .ant-menu-submenu {
+        top: 0;
+        margin-top: 0;
+      }
+
+      .ant-menu-horizontal > .ant-menu-item,
+      .ant-menu-horizontal > .ant-menu-submenu {
+        border-bottom: none;
+      }
+
+      .ant-menu-horizontal > .ant-menu-item-active,
+      .ant-menu-horizontal > .ant-menu-item-open,
+      .ant-menu-horizontal > .ant-menu-item-selected,
+      .ant-menu-horizontal > .ant-menu-item:hover,
+      .ant-menu-horizontal > .ant-menu-submenu-active,
+      .ant-menu-horizontal > .ant-menu-submenu-open,
+      .ant-menu-horizontal > .ant-menu-submenu-selected,
+      .ant-menu-horizontal > .ant-menu-submenu:hover {
+        border-bottom: none;
+      }
+    }
+  }
+
+  .trigger {
+    font-size:18px;
+    width: 72px;
+    text-align: center;
+    display: inline-block;
+    height: 72px;
+    cursor: pointer;
+    transition: all .3s,
+    padding 0s;
+  }
+
+  .trigger:hover{
+    background-color: #f8f8f8;
+  }
+
+  .globalFooter{
+      background: #fff;
+      margin-top: 0;
+      margin-bottom: 0;
+      padding-top: 24px;
+      padding-bottom: 24px;
+      min-height: 72px;
+      text-align: center;
+  }
+
+  .rightContainer {
+    display: flex;
+    align-items: center;
+  }
+
+
+  .iconButton {
+    width: 48px;
+    height: 72px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    :global {
+      .ant-badge-dot{
+        top: 10px !important;
+      }
+    }
+    cursor: pointer;
+    .background-hover();
+    &:hover {
+      .iconFont {
+        color: @primary-color;
+      }
+    }
+
+    & + .iconButton {
+      margin-left: 8px;
+    }
+
+    .iconFont {
+      color: #b2b0c7;
+      font-size: 24px;
+    }
+  }
+
+  .disFlex{
+    display: flex;
+    align-items: center;
+    font-size: 24px;
+  }
+.phone{
+  margin: 0 auto;
+  font-size: 36px;
+  text-align: center;
+  display: block;
+  width: 62px;
+  height: 62px;
+  line-height: 62px;
+  border-radius: 50%;
+  background: #ccc;
+  margin-top: 40px;
+
+  :hover{
+    font-size: 40px;
+  }
+}
+
+.newList{
+  height: 40px;
+  line-height: 40px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f1f1f1;
+
+  .checkDetail{
+    margin-right: 15px;
+    display: inline-block;
+  }
+  .red{
+    color: red;
+  }
+}

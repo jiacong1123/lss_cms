@@ -1,0 +1,66 @@
+.usercenterPage {
+  .leftContent{
+    padding: 20px;
+    text-align: center;
+    .header{
+        :global{
+            .ant-avatar-lg{
+                width: 100px;
+                height: 100px;
+            }
+        }
+    }
+    .name{
+        font-size:16px;
+        color: #000000;
+        padding: 20px;
+    }
+    .userCenter{
+        text-align: left;
+        p{
+            i{
+                margin-right: 10px
+            }
+        }
+    }
+    .divider{
+        display: block;
+        height: 1px;
+        width: 100%;
+        min-width: 100%;
+        margin: 24px 0;
+        clear: both;
+        border-top: 1px dashed #e8e8e8;
+    }
+    .userTag,.userTeam{
+        text-align: left;
+        .title{
+            font-size:14px;
+            color:#000000;
+            margin-bottom: 10px
+        }
+        :global{
+            .ant-avatar{
+               margin-right: 10px;
+            }
+            .ant-col-12{
+                padding-left: 0 !important;
+                padding-bottom: 10px;
+            }
+        }
+    }
+  }
+  .rightContent{
+    :global{
+        .ant-card-body{
+            padding: 10px 0;
+            .ant-tabs-nav-container{
+                padding: 0 20px;
+            }
+            .ant-tabs-content{
+                padding: 0 20px;
+            }
+        }
+    }
+  }
+}

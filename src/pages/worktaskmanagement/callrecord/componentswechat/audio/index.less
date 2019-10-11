@@ -1,0 +1,61 @@
+.ReactPlayer{
+    display: none;
+}
+.viruralAudio{
+    position: fixed;
+    left: 50%;
+    top:  5%;
+    transform: translate(-50%,0);
+    -moz-transform: translate(-50%,0);
+    -webkit-transform: translate(-50%,0);
+    -o-transform:  translate(-50%,0);
+    z-index: 100;
+    width: 600px;
+    background: #ffffff;
+    box-shadow: 0px 0px  15px rgba(0,0,0,0.5);
+    overflow: hidden;
+    text-align: center;
+    font-size: 18px;
+    padding: 10px 0;
+    .callInfo{
+        padding: 0 30px;
+        span{
+            display: inline-block;
+            margin-right: 20px;
+        }
+        .playBtn,.pauseBtn{
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            font-size: 30px;
+            line-height: 50px;
+            float: left;
+        }
+        .pauseBtn{
+            color: red;
+        }
+        .playBtn{
+            color: #52c41a;
+        }
+    }
+    .minus,.close{
+        font-size: 14px;
+        position: absolute;
+        top:10px
+    }
+    .minus{
+        right:30px;
+    }
+    .close{
+        right:10px;
+    }
+    .slider{
+        width: 300px;
+        float: left;
+        margin: 20px 0;
+    }
+    .time{
+        font-size: 12px;
+        line-height: 50px;
+    }
+}

@@ -1,0 +1,393 @@
+import React from 'react'
+import {  Form, Row, Col, Input, Select, Radio, Cascader, DatePicker ,message, Upload, Icon, Button, Modal} from 'antd';
+import moment from 'moment'
+import city from 'utils/city'
+import PropTypes from 'prop-types'
+import styles from './index.less'
+import store from 'store'
+
+const formItemLayout = {
+    labelCol: {
+        xs: { span: 24 },
+        sm: { span: 24 },
+    },
+    wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 24 },
+    },
+}
+
+let radioArr = {}
+
+const Option = Select.Option;
+const RadioGroup = Radio.Group
+const { TextArea } = Input;
+
+class ComSave extends React.Component {
+  //在编辑时获取对应二级来源
+  componentDidMount() {
+
+  };
+
+    state = {
+        loading: false,
+        imageUrl:null,
+        visible: false
+    }
+
+    getBase64 = (img, callback) => {
+         const reader = new FileReader();
+        reader.addEventListener('load', () => callback(reader.result));
+        reader.readAsDataURL(img);
+    }
+
+    beforeUpload = (file) => {
+
+        const isLt2M = file.size / 1024 / 1024 < 2;
+        if (!isLt2M) {
+            message.error('Image must smaller than 2MB!');
+        }
+        return  isLt2M;
+    }
+
+    //上传成功显示上传的照片
+    handleChange = (info) => {
+        if (info.file.status === 'uploading') {
+        this.setState({ loading: true });
+        return;
+        }
+        if (info.file.status === 'done') {
+        // Get this url from response in real world.
+        this.getBase64(info.file.originFileObj, imageUrl => this.setState({
+            imageUrl,
+            loading: false,
+        }));
+        }
+    }
+
+    onChangeSearch (key,e)  {
+        // let myreg = /^[1](([3][0-9])|([4][5-9])|([5][0-3,5-9])|([6][5,6])|([7][0-8])|([8][0-9])|([9][1,8,9]))[0-9]{8}$/
+        let myreg = /^1[3456789]\d{9}$/     //20190910改
+        if ( e.target.value.length === 11) {
+            if(myreg.test(e.target.value)){
+                this.props.onJudgeUserIsExist({[key]:e.target.value})
+            }else{
+                message.error('手机号格式不正确')
+            }
+        }
+    }
+
+    handleSourceChange = value => {
+      this.props.onGetSourceChild({
+        tagid: value,
+      })
+    }
+
+    handleSourceChild = value => {
+      this.props.onSetSourceChild({
+        tagid2: value,
+      })
+    }
+
+    //选择标签操作
+    showModal = () => {
+
+      this.setState({
+        visible: true,
+      });
+
+    };
+    handleOk = e => {
+      this.setState({
+        visible: false,
+      });
+    };
+    handleCancel = e => {
+      this.setState({
+        visible: false,
+      });
+    };
+
+   onChangeRadio = (e, index) => {
+      radioArr[index+'_ind'] = e.target.value
+      this.props.onSetUserTags(radioArr)
+    }
+
+    render() {
+        const { currentOrder,clinicdropmenu, jobordersource,reservedpro,electriclist,jobtitle,token,jobordersourcechild,customerTagsList, modalKey} = this.props
+        const { getFieldDecorator } = this.props.form
+        const { user } = currentOrder
+        const userinfo = store.get('userinfo')
+
+        let labelA = []
+        if(user && user.lablenames) {
+          const { lablenames } = user
+          labelA = lablenames.split(',')
+        }
+        return (
+            <div className={styles.save}>
+            <Form
+                className="ant-advanced-search-form"
+                layout='vertical'
+            >
+                <Row gutter={24}>
+                    <Col span={12}>
+                        <Form.Item label='客户姓名' {...formItemLayout}>
+                            {getFieldDecorator('name', {
+                                rules: [
+                                    {
+                                        required: true,
+                                        message: '请输入客户姓名'
+                                    }
+                                ],
+                                initialValue: user ? user.name : ""
+                            })(
+                                <Input placeholder="请输入客户姓名" />
+                            )}
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                        <Form.Item label='联系电话' {...formItemLayout}>
+                            {getFieldDecorator('phone', {
+                                rules: [
+                                    {
+                                        required:true,
+                                        pattern: '^(13[0-9]|14[0-9]|15[0-9]|16[0-9]|17[0-9]|18[0-9]|19[0-9])\\d{8}$',
+                                        message: '请输入正确的联系电话'
+                                    }
+                                ],
+                                initialValue: user ? user.phone : ""
+                            })(
+                                <Input placeholder="请输入联系电话" disabled={currentOrder && currentOrder.phone ? true : false} onChange={this.onChangeSearch.bind(this,'phone')}/>
+                            )}
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                        <Form.Item label='客户年龄' {...formItemLayout}>
+                            {getFieldDecorator('age', {
+                                initialValue: user ? user.age : ""
+                            })(
+                                <Input placeholder="请输入客户年龄" />
+                            )}
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                        <Form.Item label='性别' {...formItemLayout}>
+                            {getFieldDecorator('sex', {
+                                initialValue: user && user.sex ? user.sex : 3
+                            })(
+                                <RadioGroup>
+                                    <Radio value={1}>男</Radio>
+                                    <Radio value={2}>女</Radio>
+                                    <Radio value={3}>未知</Radio>
+                                </RadioGroup>
+                            )}
+                        </Form.Item>
+                    </Col>
+                    <Col span={12} id="addressCascader">
+                        <Form.Item label='所在省市' {...formItemLayout} >
+                            {getFieldDecorator('addressKey', {
+                                initialValue: user ? user.addressKey : ""
+                            })(
+                                <Cascader
+                                    style={{ width: '100%' }}
+                                    options={city}
+                                    placeholder='请选择省市'
+                                    getPopupContainer={() =>
+                                        document.getElementById('addressCascader')
+                                    }
+                                />
+                            )}
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                         <Form.Item label='工单来源' {...formItemLayout}>
+                            {getFieldDecorator('sourceid', {
+                                rules: [
+                                    {
+                                        required: true,
+                                        message: '请选择工单来源'
+                                    }
+                                ],
+                                initialValue: user && user.sourceid? user.sourceid : ''
+                            })(
+                                <Select
+                                    showSearch
+                                    style={{ width: '47%',marginRight:'5%' }}
+                                    placeholder="请选择工单来源"
+                                    optionFilterProp="children"
+                                    onChange={this.handleSourceChange}
+                                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                                >
+                                    <Option key='' value=''>选择来源</Option>
+                                    {jobordersource && jobordersource.length > 0 ? jobordersource.map(item => {
+                                        return <Option key={item.tagid} value={item.tagid}>{item.tagname}</Option>
+                                    }) : null}
+                                </Select>,
+                            )}
+                            {getFieldDecorator('sourceid2', {
+                                initialValue: user && user.sourceid2? user.sourceid2 : ''
+                            })(
+                                <Select
+                                    showSearch
+                                    placeholder="二级来源"
+                                    onChange={this.handleSourceChild}
+                                    style={{ width: '47%' }}
+                                    optionFilterProp="children"
+                                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                                >
+                                    <Option key='' value=''>选择二级来源</Option>
+                                    {jobordersourcechild && jobordersourcechild.length > 0 ? jobordersourcechild.map(item => {
+                                        return <Option key={item.tagid} value={item.tagid}>{item.tagname}</Option>
+                                    }) : null}
+                                </Select>,
+                            )}
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                       <Form.Item label='来源日期' {...formItemLayout}>
+                            {getFieldDecorator('sourcedate', {
+                                rules: [
+                                    {
+                                        required: true,
+                                        message: '请选择来源日期'
+                                    }
+                                ],
+                                initialValue: user && user.sourcedate ? moment(user.sourcedate, 'YYYY/MM/DD') : ''
+                            })(
+                                <DatePicker format='YYYY/MM/DD'/>
+                            )}
+                        </Form.Item>
+                    </Col>
+
+                    <Col span={12}>
+                         <Form.Item label='所属门诊' {...formItemLayout}>
+                            {getFieldDecorator('clinicid', {
+                                initialValue: currentOrder && currentOrder.clinicid ? currentOrder.clinicid : ''
+                            })(
+                                <Select
+                                    showSearch
+                                    placeholder="请选择门诊"
+                                    optionFilterProp="children"
+                                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                                >
+                                    <Option key='' value=''>选择门诊</Option>
+                                    { clinicdropmenu && clinicdropmenu.length > 0 ? clinicdropmenu.map(item => {
+                                        return <Option key={item.clinicid} value={item.clinicid}>{item.shortname}</Option>
+                                    }) : null}
+                                </Select>,
+                            )}
+                        </Form.Item>
+                    </Col>
+
+
+                    <Col span={12}>
+                         <Form.Item label='主诉' {...formItemLayout}>
+                            {getFieldDecorator('projectid', {
+                              rules: [
+                                  {
+                                      required: true,
+                                      message: '请选择主诉'
+                                  }
+                              ],
+                                initialValue: currentOrder && currentOrder.projectid ? currentOrder.projectid : ''
+                            })(
+                                <Select
+                                    showSearch
+                                    placeholder="请选择主诉"
+                                    optionFilterProp="children"
+                                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                                >
+                                    <Option key='' value=''>请选择主诉</Option>
+                                    { reservedpro && reservedpro.length > 0 ? reservedpro.map(item => {
+                                        return <Option key={item.tagid} value={item.tagid}>{item.tagname}</Option>
+                                    }) : null}
+                                </Select>,
+                            )}
+                        </Form.Item>
+                    </Col>
+                  {/*  <Col span={12}>
+                        <Form.Item label='客户标签' {...formItemLayout}>
+                            {getFieldDecorator('lablenames', {
+                                initialValue: user ? user.lablenames : ""
+                            })(
+                              <Button type="primary" onClick={this.showModal}>添加标签</Button>
+                            )}
+                        </Form.Item>
+                    </Col> */}
+                    <Col span={12}>
+                         <Form.Item label='跟进人员' {...formItemLayout}>
+                            {getFieldDecorator('adminid', {
+                                initialValue: currentOrder && currentOrder.adminid && modalKey == 'edit'? currentOrder.adminid : userinfo.adminid
+                            })(
+                                <Select
+                                    showSearch
+                                    placeholder="请选择跟进人员"
+                                    optionFilterProp="children"
+                                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                                >
+                                    <Option key='' value=''>选择跟进人员</Option>
+                                    { electriclist && electriclist.length > 0 ? electriclist.map(item => {
+                                        return <Option key={item.adminid} value={item.adminid}>{item.name}</Option>
+                                    }) : null}
+                                </Select>,
+                            )}
+                        </Form.Item>
+                    </Col>
+                    <Col span={24}>
+                        <Form.Item label='患者主诉' {...formItemLayout}>
+                            {getFieldDecorator('complaint', {
+                                initialValue: currentOrder && currentOrder.complaint?  currentOrder.complaint : ""
+                            })(
+                                <TextArea rows={4} placeholder="请输入患者主诉"/>
+                            )}
+                        </Form.Item>
+                    </Col>
+                    <Col span={24}>
+                        <Form.Item label='备注' {...formItemLayout}>
+                            {getFieldDecorator('worknotes', {
+                                initialValue: currentOrder && currentOrder.worknotes?  currentOrder.worknotes : ""
+                            })(
+                                <TextArea rows={4} placeholder="请输入备注"/>
+                            )}
+                        </Form.Item>
+                    </Col>
+
+                </Row>
+            </Form>
+            <Modal
+              title="标签管理"
+              visible={this.state.visible}
+              onOk={this.handleOk}
+              onCancel={this.handleCancel}
+            >
+            {labelA.map( i => {return <span>{i}</span>})}
+            { customerTagsList.map((item,index) => {
+                return <div  style={{marginBottom: 20}}>
+                  <p className={styles.borBottom}>{item.tagname}</p>
+                  <div >
+
+                  <Radio.Group  onChange={e => this.onChangeRadio(e, index)} size="small" buttonStyle="solid">
+                    { item.child.map( (op) => {
+                          return (
+                                  <Radio.Button
+                                  style={{marginRight: 20, marginBottom: 10}}
+                                  name="radio"
+
+                                  value={op.tagname}>
+                                    {op.tagname}
+                                  </Radio.Button>
+                          )
+                    })}
+                  </Radio.Group>
+                  </div>
+                </div>
+            }) }
+          </Modal>
+        </div>
+        )
+    }
+}
+
+
+export default ComSave
