@@ -285,20 +285,12 @@ class Handleworktask extends React.Component {
   onChangeRadio = (e, index) => {
      radioArr[index+'_ind'] = e.target.value
    }
-   onChange = (checkedValues) => {
-     console.log('checked = ', checkedValues);
-   }
 
   render() {
     const { orderdetail,loading, customerTagsList } = this.props
     const { user } = orderdetail
     const { userTags } = this.state
-    const options = [
-  { label: 'Apple', value: 'Apple' },
-  { label: 'Pear', value: 'Pear' },
-  { label: 'Orange', value: 'Orange' },
-]
-    // console.log(this.props)
+
     return (
       <div className={styles.handleworktaskPage}>
         <div className={styles.worktaskinfo}>
@@ -500,24 +492,6 @@ class Handleworktask extends React.Component {
                   </div>
               }) : '' }
 
-              { customerTagsList ? customerTagsList.map((item,index) => {
-                  return <div  style={{marginBottom: 20}}>
-                    <p className={styles.borBottom}>{item.tagname}</p>
-                    <div >
-                      <Checkbox.Group onChange={e => this.onChange(e)}>
-                        { item.child.map( (op) => {
-                              return (
-                                      <Checkbox
-                                      style={{marginRight: 10, marginBottom: 10}}
-                                      value={op.tagname}>
-                                        {op.tagname}
-                                      </Checkbox>
-                              )
-                        })}
-                      </Checkbox.Group>
-                    </div>
-                  </div>
-              }) : '' }
             </Modal> : ''
         }
 

@@ -16,7 +16,7 @@ class Filter extends React.Component {
             if (!err) {
                 this.props.onGetSearchValue(values)
                 this.props.onGetMonthList({ ...values, page: 1, limit: 10 })
-                this.props.onGetMonthListCount({...values,initEntry: true})
+                this.props.onGetMonthListCount({...values,initEntry: false})
             }
         })
     }
@@ -25,7 +25,7 @@ class Filter extends React.Component {
         this.props.onResetSearchValue()
         this.props.onGetMonthList({ page: 1, limit: 10 })
         this.props.form.resetFields()
-        this.props.onGetMonthListCount({initEntry: true})
+        this.props.onGetMonthListCount({initEntry: false})
     }
 
     render() {

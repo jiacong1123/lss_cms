@@ -20,9 +20,9 @@ class Lista extends React.Component {
 
     // 处理分页
     handleTableChange = (pagination, filters, sorter) => {
-      const { searchValue } =  this.props
+      const { searchValue } =  this.props    
       this.props.onSetCurrentPage(pagination.current)
-      this.props.onGetMonthList({page: pagination.current, limit:10, ...searchValue})
+      this.props.onGetMonthList({page: pagination.current, limit:10,...searchValue})
     }
 
     render(){

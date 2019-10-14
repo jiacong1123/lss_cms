@@ -20,9 +20,9 @@ class Listb extends React.Component {
 
     // 处理分页
     handleTableChange = (pagination, filters, sorter) => {
-      const { searchValue } =  this.props      
+      const { searchValue } =  this.props
       this.props.onSetCurrentPage(pagination.current)
-      this.props.onGetHistoryList({page: pagination.current, limit:10, ...searchValue})
+      this.props.onGetHistoryList({page: pagination.current, limit:10,...searchValue})
     }
 
     render(){
@@ -74,7 +74,7 @@ class Listb extends React.Component {
 
 
       ]
-      const { rowSelection,stcallHistoryList, loading, total, currentPage } = this.props
+      const { rowSelection,stcallHistoryList, loading, total, currentPage, searchValue } = this.props
       const { pagination} = this.state
       pagination['total'] = total
       pagination['current'] = currentPage

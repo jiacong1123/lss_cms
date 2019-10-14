@@ -13,7 +13,7 @@ export default {
       '9:00~9:30',
       '9:30~10:00',
       '10:00~10:30',
-      '10:00~11:00',
+      '10:30~11:00',
       '11:00~11:30',
       '11:30~12:00',
       '12:00~12:30',
@@ -182,7 +182,7 @@ export default {
       if (result === 1) {
         console.log('更新回访成功');
       } else {
-        message.error(errorMessage)        
+        message.error(errorMessage)
       }
     },
 

@@ -26,8 +26,8 @@ class Filter extends React.Component {
                 values.endDateStr  = ''
               }
                 this.props.onGetSearchValue(values)
-                this.props.onGetHistoryList({ ...values, page: 1, limit: 10 })
-                this.props.onGetHistoryListCount({...values, initEntry: true})
+                this.props.onGetHistoryList({...values, page: 1, limit: 10 })
+                this.props.onGetHistoryListCount({...values, initEntry: false})
             }
         })
     }
@@ -36,7 +36,7 @@ class Filter extends React.Component {
         this.props.onResetSearchValue()
         this.props.onGetHistoryList({ page: 1, limit: 10 })
         this.props.form.resetFields()
-        this.props.onGetHistoryListCount({initEntry: true})
+        this.props.onGetHistoryListCount({initEntry: false})
     }
 
     handleChange = (key, values) => {
@@ -59,7 +59,7 @@ class Filter extends React.Component {
         // 查询数据
         this.props.onGetSearchValue(fields)
         this.props.onGetHistoryList({ ...fields, page: 1, limit: 10})
-        this.props.onGetHistoryListCount({...fields, initEntry: true})
+        this.props.onGetHistoryListCount({...fields, initEntry: false})
     }
 
     render() {
