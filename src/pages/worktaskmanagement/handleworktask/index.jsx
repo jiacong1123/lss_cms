@@ -33,7 +33,6 @@ const formItemLayout = {
 
 const namespace = 'handleworktask'
 const RadioGroup = Radio.Group
-let radioArr = {}
 let userLabes = []
 let userid = ''
 
@@ -246,11 +245,14 @@ class Handleworktask extends React.Component {
   handleLabels = (record) => {
     userLabes = []
     const { lablenames } = record
+    // userLabes = userLabes.concat(lablenames.split(','))
+
     if (lablenames != null) {
       this.setState({
         userTags: lablenames.split(',')
       });
     }
+
     userid = record.userid
     this.setState({
       visible: true,
@@ -258,22 +260,20 @@ class Handleworktask extends React.Component {
   }
 
   handleOk = e => {
+    const { userTags } = this.state
+    console.log(userTags)
+    console.log(userLabes)
+    return false
     this.setState({
       visible: false,
     });
-    if (Object.keys(radioArr).length > 0) {
-      for(var i in radioArr){
-        userLabes.push(radioArr[i])
-      }
-      userLabes = Array.from(new Set(userLabes))
-    }
     if (userLabes.length > 0) {
       this.props.onChangeLabels({
         labels: userLabes.join(','),
         userid: userid
       })
     }
-    radioArr = {}
+    userLabes = []
   };
 
   handleCancel = e => {
@@ -282,15 +282,19 @@ class Handleworktask extends React.Component {
     });
   };
 
-  onChangeRadio = (e, index) => {
-     radioArr[index+'_ind'] = e.target.value
+   onChangeLaels = (e, index) => {
+     console.log(e)
+     userLabes[index+'_ind'] = e
+     console.log(userLabes)
+     return false
+     userLabes = userLabes.concat(e)
+     userLabes = Array.from(new Set(userLabes))
    }
 
   render() {
     const { orderdetail,loading, customerTagsList } = this.props
     const { user } = orderdetail
     const { userTags } = this.state
-
     return (
       <div className={styles.handleworktaskPage}>
         <div className={styles.worktaskinfo}>
@@ -476,22 +480,23 @@ class Handleworktask extends React.Component {
                   return <div  style={{marginBottom: 20}}>
                     <p className={styles.borBottom}>{item.tagname}</p>
                     <div >
-                      <Radio.Group onChange={e => this.onChangeRadio(e, index)}  size="small" buttonStyle="solid">
+                      <Checkbox.Group onChange={e => this.onChangeLaels(e, index)} key={index} defaultValue={userTags}>
                         { item.child.map( (op) => {
+
                               return (
-                                      <Radio.Button
-                                      style={{marginRight: 20, marginBottom: 10}}
-                                      name="radio"
-                                      value={op.tagname}>
+                                      <Checkbox
+                                        style={{marginRight: 10, marginBottom: 10}}
+                                        value={op.tagname}
+                                      >
                                         {op.tagname}
-                                      </Radio.Button>
+                                      </Checkbox>
                               )
+
                         })}
-                      </Radio.Group>
+                      </Checkbox.Group>
                     </div>
                   </div>
               }) : '' }
-
             </Modal> : ''
         }
 
