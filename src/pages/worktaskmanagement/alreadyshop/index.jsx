@@ -87,6 +87,14 @@ const namespace = 'alreadyshop'
       )
     )
   },
+  onSetCurrentSize(payload){
+    dispatch(
+      _mmAction(
+        `${namespace}/EFFECTS_SET_CURRENTSIZE`,
+        payload
+      )
+    )
+  },
   onGetSearchValue(payload){
     dispatch(
       _mmAction(
@@ -119,6 +127,23 @@ const namespace = 'alreadyshop'
       )
     )
   },
+  onGetBatchOrder(payload){
+    dispatch(
+      _mmAction(
+        `${namespace}/EFFECTS_BATCH_ORDER`,
+        payload
+      )
+    )
+  },
+  onCloseOrder(payload) {
+    dispatch(
+      _mmAction(
+        `${namespace}/EFFECTS_CLOSE_ORDER`,
+        payload
+      )
+    )
+  },
+
 }))
 
 class Alreadyshop extends React.Component {
@@ -139,14 +164,17 @@ class Alreadyshop extends React.Component {
 
   // 点击modal确定按钮并处理请求
   onModalOk = (values) => {
+
     const { modalKey, orderno, currentOrder, sourceChild } = this.props
     const { ordernos } = this.state
-    const { tagname } = sourceChild
+
 
     if ( modalKey === 'add') {
+      const { tagname } = sourceChild
       // 新增门诊
       this.props.onSaveOrder({...values, tagname})
     } else if (modalKey === 'edit') {
+      const { tagname } = sourceChild
       // 编辑门诊
       this.props.onSaveOrder({...values,orderno,userid: currentOrder['userid'],tagname})
     } else if (modalKey === 'batch') {
@@ -157,7 +185,12 @@ class Alreadyshop extends React.Component {
     } else if (modalKey === 'single') {
       // 单个分配
       this.props.onGetBatchOrder({...values,ordernos:[orderno]})
+    } else if (modalKey === 'close') {
+      //批量关闭
+      this.props.onCloseOrder({...values,ordernos})
+      this.setState({ selectedRowKeys:[], ordernos:[]})
     }
+
   }
   render() {
     const {  selectedRowKeys } = this.state;
@@ -170,6 +203,12 @@ class Alreadyshop extends React.Component {
       <div className={styles.alreadyshopPage}>
          <Filter {...this.props}/>
          <div className={styles.tableListBox}>
+         <Oper
+             cleanSelectedKeys={this.cleanSelectedKeys}
+             selectedRowKeys={selectedRowKeys}
+             hasSelected={hasSelected}
+             {...this.props}
+           />
           <List
               rowSelection={rowSelection}
               {...this.props}

@@ -187,10 +187,22 @@ export const phoneBindCall = (data) =>{
 //
 export const getReserveCount= (data) => {
   return request({
-    url: 'workorder/reserveCount',
+    url: '/workorder/reserveCount',
     method: 'POST',
     data:{
 
+    }
+  })
+}
+
+//二级标签列表  搜索栏
+export const getSearchTags= (data) => {
+  return request({
+    url: '/workTag/list ',
+    method: 'POST',
+    data:{
+      "type": '7',
+      "grade": '2'
     }
   })
 }

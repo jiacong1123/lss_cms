@@ -137,6 +137,14 @@ let lablenames = ""
       )
     )
   },
+  onSetCurrentSize(payload){
+    dispatch(
+      _mmAction(
+        `${namespace}/EFFECTS_SET_CURRENTSIZE`,
+        payload
+      )
+    )
+  },
 
 }))
 

@@ -14,6 +14,7 @@ export default {
     total: null,       // 工单总条数
     currentPage: 1,    // 当前页码
     searchValue: {},    // 搜索条件
+    currentSize: 10,  //每页大小
   },
 
   effects: {
@@ -22,13 +23,14 @@ export default {
       yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
       const searchValue = !payload.initEntry ? yield select(({returnvisit}) => returnvisit.searchValue) : {}
       const currentPage = yield select(({returnvisit}) => returnvisit.currentPage)
-      payload['page'] = payload.page ? payload.page : currentPage
+      const {page} = payload
+      currentPage ? payload.page = currentPage : payload.page
       const { result, obj , total, msg  } = yield call(returnvisitApi.returnList, {...searchValue,...payload})
       if (result === 1) {
         yield put(_mmAction('GET_ORDERLIST',{
           orderlist: obj,
           total,
-          currentPage:  payload.page ?  payload.page : currentPage,
+          currentPage: currentPage ? currentPage : page,
           loading: false,
           currentOrder:{},
           searchValue
@@ -44,13 +46,14 @@ export default {
     // 添加/编辑工单
     * EFFECTS_SAVE_ORDER({payload}, { call, put , select}) {
       const currentPage = yield select(({returnvisit}) => returnvisit.currentPage)
+      const currentSize = yield select(({returnvisit}) => returnvisit.currentSize)
       yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
       const data =  _mmAddressSplit(_mmTimeToStamp(payload,['sourcedate']),['province','city'])
       const { result, obj, msg } = yield call(returnvisitApi.saveOrder, data);
       if (result === 1 ) {
         yield put(_mmAction('EFFECTS_GET_ORDERLIST',{
           page:currentPage,
-          limit: 10
+          limit: currentSize
         }))
         yield put(_mmAction('IS_SHOWMODAL',{visible: false, title: ''}))
         message.success('操作成功!')
@@ -121,15 +124,24 @@ export default {
         }
       })
     },
+    //设置当前每一页大小
+    * EFFECTS_SET_CURRENTSIZE({payload}, { call, put , select}){
+      yield put({
+        type: 'SET_CURRENTSIZE',
+        payload: {
+          currentSize: payload
+        }
+      })
+    },
     //修改列表客户标签
     * EFFECTS_ONCHANGELABELS({payload}, { call, put , select}){
-      console.log(payload)
       const currentPage = yield select(({returnvisit}) => returnvisit.currentPage)
+      const currentSize = yield select(({returnvisit}) => returnvisit.currentSize)
       yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
       const { result, obj, msg } = yield call(returnvisitApi.changeLabels, payload);
       if (result === 1 ) {
         message.success('编辑标签成功!')
-        yield put(_mmAction('EFFECTS_GET_ORDERLIST',{ page:currentPage, limit: 10 }))
+        yield put(_mmAction('EFFECTS_GET_ORDERLIST',{ page:currentPage, limit: currentSize }))
       } else {
         message.error(msg)
         yield put(_mmAction('IS_SHOWLOADING',{loading: false}))
@@ -157,7 +169,9 @@ export default {
     IS_SHOWMODAL(state, { payload }) {
       return { ...state, ...payload }
     },
-
+    SET_CURRENTSIZE(state, { payload }) {
+      return { ...state, ...payload }
+    },
   },
 
   subscriptions: {

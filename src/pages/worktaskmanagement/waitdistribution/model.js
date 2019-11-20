@@ -17,7 +17,8 @@ export default {
     currentPage: 1,    // 当前页码
     searchValue: {},    // 搜索条件
     jobordersourcechild:[],
-    userTags:[]
+    userTags:[],
+    currentSize: 10,  //每页大小
   },
 
   effects: {
@@ -27,13 +28,14 @@ export default {
       const searchValue = !payload.initEntry ? yield select(({waitdistribution}) => waitdistribution.searchValue) : {}
       const currentPage = yield select(({waitdistribution}) => waitdistribution.currentPage)
       const { page } = payload
+      currentPage ? payload.page = currentPage : payload.page
       const status = 0
       const { result, obj , total, msg  } = yield call(waitdistributionApi.getOrderList, {...searchValue,...payload, status})
       if (result === 1) {
         yield put(_mmAction('GET_ORDERLIST',{
           orderlist: obj,
           total,
-          currentPage: page ? page : currentPage,
+          currentPage: currentPage ? currentPage : page,
           loading: false,
           currentOrder:{},
           searchValue
@@ -71,6 +73,7 @@ export default {
     // 添加/编辑工单
     * EFFECTS_SAVE_ORDER({payload}, { call, put , select}) {
       const currentPage = yield select(({waitdistribution}) => waitdistribution.currentPage)
+      const currentSize = yield select(({waitdistribution}) => waitdistribution.currentSize)
       const userTags = yield select(({waitdistribution}) => waitdistribution.userTags)
       let lablenames = ''
       let userLabes = []
@@ -89,7 +92,7 @@ export default {
       if (result === 1 ) {
         yield put(_mmAction('EFFECTS_GET_ORDERLIST',{
           page:currentPage,
-          limit: 10
+          limit: currentSize
         }))
         yield put(_mmAction('IS_SHOWMODAL',{visible: false, title: ''}))
         yield put(_mmAction('SET_USERID',{userid: '' }))
@@ -125,11 +128,12 @@ export default {
     * EFFECTS_BATCH_ORDER({payload}, { call, put , select}){
       yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
       const currentPage = yield select(({waitdistribution}) => waitdistribution.currentPage)
+      const currentSize = yield select(({waitdistribution}) => waitdistribution.currentSize)
       const { result, obj, msg } = yield call(waitdistributionApi.getBatchOrder, payload);
       if (result === 1 ) {
         yield put(_mmAction('EFFECTS_GET_ORDERLIST',{
           page:currentPage,
-          limit: 10
+          limit: currentSize
         }))
         yield put(_mmAction('IS_SHOWMODAL',{visible: false, title: ''}))
         message.success('分配成功!')
@@ -183,6 +187,15 @@ export default {
         }
       })
     },
+    //设置当前每一页大小
+    * EFFECTS_SET_CURRENTSIZE({payload}, { call, put , select}){
+      yield put({
+        type: 'SET_CURRENTSIZE',
+        payload: {
+          currentSize: payload
+        }
+      })
+    },
 
     //存储标签
     * EFFECTS_SET_USERTAGS({payload}, { call, put , select}){
@@ -197,12 +210,13 @@ export default {
     //修改列表客户标签
     * EFFECTS_ONCHANGELABELS({payload}, { call, put , select}){
       const currentPage = yield select(({waitdistribution}) => waitdistribution.currentPage)
+      const currentSize = yield select(({allworktask}) => allworktask.currentSize)
       yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
       const { result, obj, msg } = yield call(waitdistributionApi.changeLabels, payload);
       if (result === 1 ) {
         message.success('编辑标签成功!')
 
-        yield put(_mmAction('EFFECTS_GET_ORDERLIST',{ page:currentPage, limit: 10 }))
+        yield put(_mmAction('EFFECTS_GET_ORDERLIST',{ page:currentPage, limit: currentSize }))
 
       } else {
         message.error(msg)
@@ -240,6 +254,9 @@ export default {
       return { ...state, ...payload }
     },
     SET_USERTAGS(state, { payload }) {
+      return { ...state, ...payload }
+    },
+    SET_CURRENTSIZE(state, { payload }) {
       return { ...state, ...payload }
     },
   },

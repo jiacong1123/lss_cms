@@ -120,6 +120,12 @@ class Callphonerecord extends React.Component {
 
          <div className={styles.tableListBox}>
           <Filter {...this.props}/>
+          <Oper
+              cleanSelectedKeys={this.cleanSelectedKeys}
+              selectedRowKeys={selectedRowKeys}
+              hasSelected={hasSelected}
+              {...this.props}
+            />
           <List
               rowSelection={rowSelection}
               {...this.props}

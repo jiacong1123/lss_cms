@@ -12,6 +12,7 @@ class Filter extends React.Component {
 
     // 收集表单
     handleSearch = () => {
+        const { currentSize } = this.props
         const { validateFields } = this.props.form
         validateFields((err,values)=>{
             if(!err){
@@ -38,20 +39,29 @@ class Filter extends React.Component {
               } else {
                 values.followupTimeEnd  = ''
               }
+              let searchTag = ''
+              if (values.tag && values.tag.length) {
+                searchTag = values.tag.join(',')
+              }
                this.props.onGetSearchValue(values)
-               this.props.onGetOrderList({...values,page:1, limit:10})
+               this.props.onGetOrderList({...values,page:1, limit:currentSize, searchTag: searchTag})
             }
         })
     }
 
     handleReset = () => {
+        const { currentSize } = this.props
         this.props.onResetSearchValue()
-        this.props.onGetOrderList({page:1, limit:10})
+        this.props.onGetOrderList({page:1, limit:currentSize})
         this.props.form.resetFields()
     }
 
+    changeLabels = (value) => {
+       console.log(`selected ${value}`);
+    }
+
     handleChange = (key, values) => {
-        const { form, onFilterChange } = this.props
+        const { form, onFilterChange, currentSize } = this.props
         const { getFieldsValue } = form
 
         let fields = getFieldsValue()
@@ -79,12 +89,13 @@ class Filter extends React.Component {
         }
         // 查询数据
         this.props.onGetSearchValue(fields)
-        this.props.onGetOrderList({...fields,page:1, limit:10})
+        this.props.onGetOrderList({...fields,page:1, limit:currentSize})
     }
 
     render(){
-        const { form, clinicdropmenu, searchValue, personnelList } = this.props
+        const { form, clinicdropmenu, searchValue, personnelList, electriclist, searchTags } = this.props
         const { getFieldDecorator } = form
+
         return (
             <div className={styles.serchBox}>
                 <Form
@@ -92,21 +103,44 @@ class Filter extends React.Component {
                 >
                     <Row>
                     <Col span={4}>
-                        <Form.Item label='客户姓名'>
+                        <Form.Item label='姓名'>
                         {getFieldDecorator('name', {
                             initialValue: searchValue && searchValue.name ? searchValue.name : ''
                         })(
-                            <Input placeholder="请输入客户姓名" />
+                            <Input placeholder="请输入姓名" />
                         )}
                         </Form.Item>
                     </Col>
                     <Col span={4}>
-                        <Form.Item label='客户电话'>
+                        <Form.Item label='电话'>
                         {getFieldDecorator('phone', {
                             initialValue: searchValue && searchValue.phone ? searchValue.phone : ''
                         })(
-                            <Input placeholder="请输入客户电话" />
+                            <Input placeholder="请输入电话" />
                         )}
+                        </Form.Item>
+                    </Col>
+                    <Col span={4}>
+                        <Form.Item label='意愿等级'>
+                            {getFieldDecorator('level', {
+                                 initialValue: searchValue && searchValue.level ? searchValue.level : ''
+                            })(
+                                <Select
+                                    showSearch
+                                    placeholder="请选择"
+                                    style={{ width: 100 }}
+                                    optionFilterProp="children"
+                                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                                    onChange={this.handleChange.bind(this, 'level')}
+                                >
+                                    <Option value="">请选择</Option>
+                                    <Option value="A">A</Option>
+                                    <Option value="B">B</Option>
+                                    <Option value="C">C</Option>
+                                    <Option value="D">D</Option>
+                                    <Option value="E">E</Option>
+                                </Select>
+                            )}
                         </Form.Item>
                     </Col>
                     <Col span={4}>
@@ -122,7 +156,7 @@ class Filter extends React.Component {
                                     filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                                 >
                                     <Option key='' value=''>选择所属人员</Option>
-                                    { personnelList && personnelList.length > 0 ? personnelList.map(item => {
+                                    { electriclist && electriclist.length > 0 ? electriclist.map(item => {
                                         return <Option key={item.adminid} value={item.adminid}>{item.name}</Option>
                                     }) : null}
                                 </Select>,
@@ -131,6 +165,7 @@ class Filter extends React.Component {
                     </Col>
                   </Row>
                   <Row>
+
                   <Col span={4}>
                     <Form.Item label='分配日期'>
                         {getFieldDecorator('allottimeStart', {
@@ -167,13 +202,33 @@ class Filter extends React.Component {
                       )}
                   </Form.Item>
               </Col>
-                        <Col span={4}>
-                            <Form.Item>
-                                <Button type="primary" htmlType="submit" onClick={this.handleSearch}>查询</Button>
-                                <Button style={{ marginLeft: 8 }} onClick={this.handleReset}>重置</Button>
-                            </Form.Item>
-                        </Col>
                     </Row>
+                    <Row>
+                    <Col span={8}>
+                       <Form.Item label='标签搜索'>
+                          {getFieldDecorator('tag', {
+                              initialValue: searchValue && searchValue.tag ? searchValue.tag : ''
+                          })(
+                              <Select
+                                  mode="multiple"
+                                  showSearch
+                                  style={{ width: 420 }}
+                                  placeholder="请选择标签"
+                              >
+                                  { searchTags && searchTags.length > 0 ? searchTags.map(item => {
+                                      return <Option key={item.tagid} value={item.tagname}>{item.tagname}</Option>
+                                  }) : null}
+                              </Select>,
+                          )}
+                      </Form.Item>
+                  </Col>
+                  <Col span={4}>
+                      <Form.Item>
+                          <Button type="primary" htmlType="submit" onClick={this.handleSearch}>查询</Button>
+                          <Button style={{ marginLeft: 8 }} onClick={this.handleReset}>重置</Button>
+                      </Form.Item>
+                  </Col>
+                  </Row>
                 </Form>
             </div>
         )

@@ -41,14 +41,16 @@ export default {
     servicelist: [],   // 派单服务列表
     serviceTotal: 0,
     urlParams: [],
-    paymentRecords: {}  //缴费记录
+    paymentRecords: {},  //缴费记录
     // currentCallInfo: {},
     // visible_calltype: false,
     // visible_calltype_ATD: false,  // 拨号中
     // visible_calltype_CBEGIN: false, // 去电来点是否接通
     // visible_calltype_CEND: false,  // 话机挂机
     // visible_calltype_CALLING: false // 是否有来电
-
+    defaultLabels: [],
+    messageTemplateList: [],  //短信模板
+    messageContent: '',      //短信内容
   },
 
   effects: {
@@ -178,12 +180,75 @@ export default {
     },
 
     * EFFECTS_UPDATE_ISRETURN({payload}, { call, put , select}) {
-      const { result, obj , total, msg  } = yield call(worktaskmanagementApi.updateIsReturn, payload)
+      let ordernos = (payload.orderno).split(',')
+      const { result, obj , total, msg  } = yield call(worktaskmanagementApi.updateIsReturn, {...payload,ordernos})
       if (result === 1) {
         console.log('更新回访成功');
       } else {
         message.error(errorMessage)
       }
+    },
+
+    //存储用户标签
+    * EFFECTS_SET_DEFAULTLABELS({payload}, { call, put , select}){
+      yield put({
+        type: 'SET_URLPARAMS',
+        payload: {
+          defaultLabels: payload
+        }
+      })
+    },
+    //清空标签
+    * EFFECTS_CLEAR_LABELS({payload}, { call, put , select}){
+      yield put({
+        type: 'SET_USERTAGS',
+        payload: {
+          defaultLabels: []
+        }
+      })
+    },
+
+    //获取短信模板列表
+    * EFFECTS_MESSAGE_TEMPLATELIST({payload}, { call, put , select}) {
+      const { result, obj , total, msg  } = yield call(worktaskmanagementApi.messageTemplate, {})
+      if (result === 1) {
+        yield put({
+          type: 'SET_URLPARAMS',
+          payload: {
+            messageTemplateList: obj
+          }
+        })
+      } else {
+        message.error(msg)
+      }
+    },
+
+    //根据id获取短信内容
+    * EFFECTS_MESSAGE_CONTENT({payload}, { call, put , select}) {
+      yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
+      const { result, obj , total, msg  } = yield call(worktaskmanagementApi.messageContent, {templateId:payload})
+      if (result === 1) {
+        yield put({
+          type: 'SET_URLPARAMS',
+          payload: {
+            messageContent: obj.data[0].tpl_content
+          }
+        })
+        yield put(_mmAction('IS_SHOWMODAL',{loading: false}))
+      } else {
+        message.error(msg)
+        yield put(_mmAction('IS_SHOWLOADING',{loading: false}))
+      }
+    },
+
+    //清空短信内容
+    * EFFECTS_CLEAR_MESSAGECONTENT({payload}, { call, put , select}) {
+        yield put({
+          type: 'SET_URLPARAMS',
+          payload: {
+            messageContent: ''
+          }
+        })
     },
 
   },

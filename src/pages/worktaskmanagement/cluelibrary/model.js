@@ -20,6 +20,7 @@ export default {
     serviceTotal: null,
     userType: '',
     record:{},
+    currentSize: 10,  //每页大小
   },
 
   effects: {
@@ -60,12 +61,13 @@ export default {
       yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
       const currentPage = yield select(({cluelibrary}) => cluelibrary.currentPage)
       const currentClue = yield select(({cluelibrary}) => cluelibrary.currentClue)
+      const currentSize = yield select(({cluelibrary}) => cluelibrary.currentSize)
       payload= _mmTimeToStamp(_mmAddressSplit(payload,['province','city','area']),['reservedate'],'YYYY-MM-DD')
       const { result, obj , total, msg  } = yield call(cluelibraryApi.apiEditClue, {...payload, orderno: currentClue.orderno});
       if (result === 1 ) {
         yield put(_mmAction('EFFECTS_GET_CLUELIST',{
           page:currentPage,
-          limit: 10,
+          limit: currentSize,
         }))
         yield put(_mmAction('IS_SHOWMODAL',{ visible: false, title: ''}))
         message.success('操作成功!')
@@ -101,13 +103,14 @@ export default {
     // 派单
     * EFFECTS_CLUE_DISPATCH({payload}, { call, put , select}) {
       const currentPage = yield select(({cluelibrary}) => cluelibrary.currentPage)
+      const currentSize = yield select(({cluelibrary}) => cluelibrary.currentSize)
       const { orderno } = yield select(({cluelibrary}) => cluelibrary.record)
       const { result, errorMessage, returnObject } = yield call(cluelibraryApi.dispatchClue,{...payload, orderno})
       if (result) {
        message.success('派单成功成功!')
        yield put(_mmAction('EFFECTS_GET_CLUELIST',{
         page:currentPage,
-        limit: 10
+        limit: currentSize
       }))
        yield put(_mmAction('IS_SHOWMODAL',{visible: false, servicelist:[] }))
      } else {
@@ -146,6 +149,16 @@ export default {
         }
       })
     },
+    //设置当前每一页大小
+    * EFFECTS_SET_CURRENTSIZE({payload}, { call, put , select}){
+      yield put({
+        type: 'SET_CURRENTSIZE',
+        payload: {
+          currentSize: payload
+        }
+      })
+    },
+
   },
 
   reducers: {
@@ -160,7 +173,10 @@ export default {
     },
     IS_SHOWMODAL(state, { payload }) {
       return { ...state, ...payload }
-    }
+    },
+    SET_CURRENTSIZE(state, { payload }) {
+      return { ...state, ...payload }
+    },
   },
 
   subscriptions: {

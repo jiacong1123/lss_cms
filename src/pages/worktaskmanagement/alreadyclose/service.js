@@ -17,6 +17,7 @@ export const getOrderList = (data) => {
       "followupTimeEnd": data.followupTimeEnd,
       "allottimeStart": data.allottimeStart,
       "allottimeEnd": data.allottimeEnd,
+      "tag": data.searchTag,
     }
   })
 }
@@ -64,11 +65,12 @@ export const getOrderDetail = (data) => {
 }
 
 export const activationDetail = (data) => {
+  console.log(data);
   return request({
     url: '/workorder/activation',
     method: 'POST',
     data:{
-      "orderno": data.orderno
+      "orderno": data.orderno || data.ordernos
     }
   })
 }
@@ -79,6 +81,17 @@ export const deleteOrder = (data) => {
     method: 'POST',
     data:{
       "orderno": data.orderno
+    }
+  })
+}
+
+export const getBatchOrder = (data) => {
+  return request({
+    url: '/workorder/batchassign',
+    method: 'POST',
+    data:{
+      "adminid": data.adminid,
+      "ordernos": data.ordernos // 分配工单号
     }
   })
 }

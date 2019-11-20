@@ -14,7 +14,8 @@ export default {
     modalKey: '',      // 当前操作的标识
     total: null,       // 工单总条数
     currentPage: 1,    // 当前页码
-    searchValue: {}    // 搜索条件
+    searchValue: {},    // 搜索条件
+    currentSize: 10,  //每页大小
   },
 
   effects: {
@@ -23,14 +24,15 @@ export default {
       yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
       const searchValue = !payload.initEntry ? yield select(({alreadydeal}) => alreadydeal.searchValue) : {}
       const currentPage = yield select(({alreadydeal}) => alreadydeal.currentPage)
-      const { page } = payload
+      const {page} = payload
+      currentPage ? payload.page = currentPage : payload.page
       const status = 4
       const { result, obj , total, msg  } = yield call(alreadydealApi.getOrderList, {...searchValue,...payload, status})
       if (result === 1) {
         yield put(_mmAction('GET_ORDERLIST',{
           orderlist: _mmStampToTime(obj,['returndate'],'YYYY/MM/DD'),
           total,
-          currentPage: page ? page : currentPage,
+          currentPage: currentPage ? currentPage : page,
           loading: false,
           currentOrder:{},
           searchValue
@@ -43,13 +45,14 @@ export default {
     // 添加/编辑工单
     * EFFECTS_SAVE_ORDER({payload}, { call, put , select}) {
       const currentPage = yield select(({alreadydeal}) => alreadydeal.currentPage)
+      const currentSize = yield select(({alreadydeal}) => alreadydeal.currentSize)
       yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
       const data =  _mmAddressSplit(_mmTimeToStamp(payload,['sourcedate']),['province','city'])
       const { result, obj, msg } = yield call(alreadydealApi.saveOrder, data);
       if (result === 1 ) {
         yield put(_mmAction('EFFECTS_GET_ORDERLIST',{
           page:currentPage,
-          limit: 10
+          limit: currentSize
         }))
         yield put(_mmAction('IS_SHOWMODAL',{visible: false, title: ''}))
         message.success('操作成功!')
@@ -118,6 +121,15 @@ export default {
         }
       })
     },
+    //设置当前每一页大小
+    * EFFECTS_SET_CURRENTSIZE({payload}, { call, put , select}){
+      yield put({
+        type: 'SET_CURRENTSIZE',
+        payload: {
+          currentSize: payload
+        }
+      })
+    },
     //收费登记
     * EFFECTS_CHARGESAVE({payload}, { call, put , select}){
       let data = _mmTimeToStamp(payload,['payTime'],'YYYY/MM/DD')
@@ -151,7 +163,10 @@ export default {
     },
     IS_SHOWMODAL(state, { payload }) {
       return { ...state, ...payload }
-    }
+    },
+    SET_CURRENTSIZE(state, { payload }) {
+      return { ...state, ...payload }
+    },
   },
 
   subscriptions: {

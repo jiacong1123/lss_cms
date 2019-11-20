@@ -88,6 +88,14 @@ const namespace = 'returnvisit'
       )
     )
   },
+  onSetCurrentSize(payload){
+    dispatch(
+      _mmAction(
+        `${namespace}/EFFECTS_SET_CURRENTSIZE`,
+        payload
+      )
+    )
+  },
   onGetSearchValue(payload){
     dispatch(
       _mmAction(
@@ -192,6 +200,12 @@ class returnvisit extends React.Component {
       <div className={styles.returnvisitPage}>
          <Filter {...this.props}/>
          <div className={styles.tableListBox}>
+         <Oper
+             cleanSelectedKeys={this.cleanSelectedKeys}
+             selectedRowKeys={selectedRowKeys}
+             hasSelected={hasSelected}
+             {...this.props}
+           />
           <List
               rowSelection={rowSelection}
               {...this.props}

@@ -83,7 +83,8 @@ class ComSave extends React.Component {
     render() {
         const { currentOrder,clinicdropmenu, jobordersource,reservedpro,electriclist,jobtitle,token,jobordersourcechild} = this.props
         const { getFieldDecorator } = this.props.form
-        const { user } = currentOrder
+        const { user, status } = currentOrder
+
         return (
             <div className={styles.save}>
             <Form
@@ -91,6 +92,13 @@ class ComSave extends React.Component {
                 layout='vertical'
             >
                 <Row gutter={24}>
+
+                    <Form.Item label='' {...formItemLayout}>
+                        {getFieldDecorator('status', {
+                            initialValue: status ? status : ""
+                        })}
+                    </Form.Item>
+                
                     <Col span={12}>
                         <Form.Item label='客户姓名' {...formItemLayout}>
                             {getFieldDecorator('name', {

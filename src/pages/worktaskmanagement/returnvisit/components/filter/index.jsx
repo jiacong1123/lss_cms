@@ -12,23 +12,25 @@ class Filter extends React.Component {
 
     // 收集表单
     handleSearch = () => {
+        const { currentSize } = this.props
         const { validateFields } = this.props.form
         validateFields((err, values) => {
             if (!err) {
                 this.props.onGetSearchValue(values)
-                this.props.onGetOrderList({ ...values, page: 1, limit: 10 })
+                this.props.onGetOrderList({ ...values, page: 1, limit: currentSize })
             }
         })
     }
 
     handleReset = () => {
+        const { currentSize } = this.props
         this.props.onResetSearchValue()
-        this.props.onGetOrderList({ page: 1, limit: 10 })
+        this.props.onGetOrderList({ page: 1, limit: currentSize })
         this.props.form.resetFields()
     }
 
     handleChange = (key, values) => {
-        const { form, onFilterChange } = this.props
+        const { form, onFilterChange, currentSize } = this.props
         const { getFieldsValue } = form
 
         let fields = getFieldsValue()
@@ -36,7 +38,7 @@ class Filter extends React.Component {
 
         // 查询数据
         this.props.onGetSearchValue(fields)
-        this.props.onGetOrderList({ ...fields, page: 1, limit: 10 })
+        this.props.onGetOrderList({ ...fields, page: 1, limit: currentSize })
     }
 
     render() {
@@ -88,7 +90,26 @@ class Filter extends React.Component {
                                 )}
                             </Form.Item>
                         </Col>
-
+                        <Col span={4}>
+                             <Form.Item label='所属人员'>
+                                {getFieldDecorator('adminid', {
+                                    initialValue: searchValue && searchValue.adminid ? searchValue.adminid : ''
+                                })(
+                                    <Select
+                                        showSearch
+                                        style={{ width: 180 }}
+                                        placeholder="请选择所属人员"
+                                        optionFilterProp="children"
+                                        filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                                    >
+                                        <Option key='' value=''>选择所属人员</Option>
+                                        { personnelList && personnelList.length > 0 ? personnelList.map(item => {
+                                            return <Option key={item.adminid} value={item.adminid}>{item.name}</Option>
+                                        }) : null}
+                                    </Select>,
+                                )}
+                            </Form.Item>
+                        </Col>
                       <Col span={4}>
                           <Form.Item>
                               <Button type="primary" htmlType="submit" onClick={this.handleSearch}>查询</Button>

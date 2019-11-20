@@ -182,7 +182,7 @@ class Tabsc extends React.Component {
                     </Col>
                 </div> : null }
             </TabPane>
-            <TabPane tab='转跟进' key="2">
+            <TabPane tab='跟进记录' key="2">
                 { tabKey == '2' ? <div>
                     <Col span={24}>
                         <Form.Item label='原因说明' {...formItemLayout}>
@@ -198,10 +198,10 @@ class Tabsc extends React.Component {
                             )}
                         </Form.Item>
                     </Col>
-                    <div className={styles.tipBox}>
+                    {/*<div className={styles.tipBox}>
                         <strong>注意：</strong>
                         <p>未到店将转入待跟进</p>
-                    </div>
+                    </div>*/}
                 </div> : null }
             </TabPane>
           </Tabs>

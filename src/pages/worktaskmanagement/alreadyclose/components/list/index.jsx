@@ -13,7 +13,11 @@ const confirm = Modal.confirm;
 class List extends React.Component {
 
       state = {
-        pagination: {}
+        pagination: {
+          showSizeChanger: true,
+          // onShowSizeChange: (current,pageSize) => this.onShowSizeChange(current,pageSize),
+          pageSizeOptions: ['10', '20', '50', '100']
+        }
       }
       // 点击操作按钮
       handleMenuClick = (orderno, e, name) => {
@@ -47,6 +51,15 @@ class List extends React.Component {
               this.props.onDeleteOrder({orderno})
             }
           })
+        } else if( e.key === '4' ) { //分配
+          // 获取当前工单信息
+          this.props.onGetCurrentOrder({orderno})
+          // 弹出分配工单modal
+          this.props.onIsShowModal({
+            visible:true,
+            title: '分配工单',
+            modalKey: 'single'
+          })
         }
     }
 
@@ -54,7 +67,14 @@ class List extends React.Component {
     handleTableChange = (pagination, filters, sorter) => {
       const { searchValue } =  this.props
       this.props.onSetCurrentPage(pagination.current)
-      this.props.onGetOrderList({page: pagination.current, limit:10,...searchValue})
+      this.props.onGetOrderList({page: pagination.current, limit:pagination.pageSize,...searchValue})
+    }
+
+    //改变每页条数
+    onShowSizeChange = (current, pageSize) => {
+      const { searchValue } =  this.props      
+      this.props.onSetCurrentSize(pageSize)
+      this.props.onGetOrderList({page: 1, limit:pageSize, ...searchValue })
     }
 
     render(){
@@ -78,6 +98,10 @@ class List extends React.Component {
                 <div className={mixin.lightHeight}>{phone}</div>
               )
             }
+          },
+          {
+            title: '意愿等级',
+            dataIndex: 'level',
           },
           {
             title: '客户标签',
@@ -117,7 +141,6 @@ class List extends React.Component {
           {
             title: '所属门诊',
             dataIndex: 'clinicname',
-
           },
           {
             title: '预约项目',
@@ -138,16 +161,17 @@ class List extends React.Component {
               <DropOption
                   onMenuClick={e => this.handleMenuClick(orderno, e, name)}
                   menuOptions={[
+                     { key: '4', name: '分配' },
                      { key: '1', name: '领取' },
                      { key: '2', name: '详情' },
-                     { key: '3', name: '删除' }
+                     { key: '3', name: '删除' },
                   ]}
               />
               )
             }
           }
       ]
-      const { rowSelection,orderlist, loading, total, currentPage } = this.props
+      const { rowSelection,orderlist, loading, total, currentPage, currentSize } = this.props
       const { pagination} = this.state
       pagination['total'] = total
       pagination['current'] = currentPage

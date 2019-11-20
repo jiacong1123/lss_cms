@@ -40,6 +40,7 @@ export default {
         personnelList: [],  //所属人员列表
         reserveCount: 0,  //预约回访数量
         reserveFlag: false,
+        searchTags: [],   //搜索栏tags
     },
     effects:{
         *EFFECTS_TOGGLE(action,{call,put,select}){
@@ -88,6 +89,7 @@ export default {
                 })
             }
         },
+
         *EFFECTS_GET_TAGS({payload},{call,put,select}){
             const { type } = payload
             const { result, obj } = yield call(service.getTags,payload)
@@ -416,6 +418,13 @@ export default {
             }
         },
 
+        //清空待回访数量
+
+        * EFFECTS_CLEAR_RETURNCOUNT({payload}, { call, put , select}) {
+          yield put(_mmAction('CLEAR_REAERVECOUNT',{
+              returnCount: 0
+          }))
+        },
 
         //所属人员列表
         * EFFECTS_PERSONNELLIST({payload}, { call, put , select}){
@@ -449,6 +458,19 @@ export default {
           yield put(_mmAction('CLEAR_REAERVECOUNT',{
               reserveCount: 0
           }))
+        },
+
+        //搜索栏tags
+        * EFFECTS_GET_SEARCHtAGS({payload},{call,put,select}){
+          const { result, obj } = yield call(service.getSearchTags,payload)
+          if (result === 1 ){
+              yield put({
+                  type:'GET_TAGS',
+                  payload: {
+                      searchTags: obj
+                  }
+              })
+          }
         },
 
     },
@@ -512,7 +534,18 @@ export default {
     subscriptions:{
         setup({ dispatch, history }) {
             history.listen( location=> {
-                if (location.pathname !== '/login') {
+                if (location.pathname == '/worktaskmanagement/alreadyclose') {
+                  //已关闭工单 获取全部人员
+                  dispatch({
+                      type: 'EFFECTS_GET_PERSONNAL',
+                      payload: {
+                          roleid: 1
+                      }
+                  })
+                  dispatch({
+                      type: 'EFFECTS_GET_SEARCHtAGS'
+                  })
+                } else if (location.pathname !== '/login') {
                     store.set('targetpathname',location.pathname)
                     //获取诊所菜单
                     dispatch({
@@ -583,13 +616,16 @@ export default {
                     dispatch({
                         type: 'EFFECTS_MISSEDCALLNUM'
                     })
-                    //待回访数量
-                    dispatch({
-                        type: 'EFFECTS_RETURNCOUNT'
-                    })
+                    // //待回访数量
+                    // dispatch({
+                    //     type: 'EFFECTS_RETURNCOUNT'
+                    // })
                     //所属人员列表
                     dispatch({
                         type: 'EFFECTS_PERSONNELLIST'
+                    })
+                    dispatch({
+                        type: 'EFFECTS_GET_SEARCHtAGS'
                     })
                 }
 

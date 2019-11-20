@@ -73,6 +73,7 @@ export const getOrderDetail = (data) => {
     }
   })
 }
+
 export const changeLabels= (data) => {
   console.log(data)
   return request({
@@ -81,6 +82,27 @@ export const changeLabels= (data) => {
     data:{
       "userid": data.userid,
       "lablenames": data.labels
+    }
+  })
+}
+
+export const getBatchOrder = (data) => {
+  return request({
+    url: '/workorder/batchTransfer',
+    method: 'POST',
+    data:{
+      "adminid": data.adminid,
+      "ordernos": data.ordernos // 分配工单号
+    }
+  })
+}
+
+export const closeOrder = (data)=> {
+  return request({
+    url: '/workorder/close',
+    method: 'POST',
+    data:{
+      "orderno": data.ordernos,
     }
   })
 }

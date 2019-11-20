@@ -1,7 +1,6 @@
 import request from 'utils/request';
 
 export const getOrderList = (data) => {
-  console.log(data)
   return request({
     url: '/workorder/list',
     method: 'POST',

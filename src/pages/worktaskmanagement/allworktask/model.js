@@ -18,7 +18,8 @@ export default {
     searchValue: {},    // 搜索条件
     jobordersourcechild:[],
     userTags:[],
-    selectedList: []
+    selectedList: [],
+    currentSize: 10,  //每页大小
   },
 
   effects: {
@@ -27,7 +28,9 @@ export default {
       yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
       const searchValue = !payload.initEntry ? yield select(({allworktask}) => allworktask.searchValue) : {}
       const currentPage = yield select(({allworktask}) => allworktask.currentPage)
+      const {page} = payload
       currentPage ? payload.page = currentPage : payload.page
+
       let  status = null
 
       if (Object.keys(searchValue).length = 0 || payload.status == undefined) {
@@ -35,14 +38,12 @@ export default {
        if (searchValue.status) {
           status = searchValue.status
         } else {
-          status = '99' 
+          status = '99'
         }
       } else {
         status = payload.status
       }
       // const data = _mmTimeToStamp({...searchValue,...payload, status},['sourcedateStart','sourcedateEnd'],'YYYY/MM/DD')
-
-      // console.log(payload)
       const { result, obj , total, msg  } = yield call(allworktaskApi.getOrderList, {...searchValue,...payload, status})
       if (result === 1) {
         yield put(_mmAction('GET_ORDERLIST',{
@@ -86,6 +87,7 @@ export default {
     // 添加/编辑工单
     * EFFECTS_SAVE_ORDER({payload}, { call, put , select}) {
       const currentPage = yield select(({allworktask}) => allworktask.currentPage)
+      const currentSize = yield select(({allworktask}) => allworktask.currentSize)
       const userTags = yield select(({allworktask}) => allworktask.userTags)
       let lablenames = ''
       let userLabes = []
@@ -104,7 +106,7 @@ export default {
       if (result === 1 ) {
         yield put(_mmAction('EFFECTS_GET_ORDERLIST',{
           page:currentPage,
-          limit: 10,
+          limit: currentSize,
           status:'99'
         }))
         yield put(_mmAction('IS_SHOWMODAL',{visible: false, title: ''}))
@@ -141,11 +143,12 @@ export default {
     * EFFECTS_BATCH_ORDER({payload}, { call, put , select}){
       yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
       const currentPage = yield select(({allworktask}) => allworktask.currentPage)
+      const currentSize = yield select(({allworktask}) => allworktask.currentSize)
       const { result, obj, msg } = yield call(allworktaskApi.getBatchOrder, payload);
       if (result === 1 ) {
         yield put(_mmAction('EFFECTS_GET_ORDERLIST',{
           page:currentPage,
-          limit: 10,
+          limit: currentSize,
           status: '99'
         }))
         yield put(_mmAction('IS_SHOWMODAL',{visible: false, title: ''}))
@@ -187,7 +190,8 @@ export default {
           type: 'RESET_SEARCHVALUE',
           payload: {
             searchValue:{},
-            currentPage: 1
+            currentPage: 1,
+            currentSize: 10,
           }
         })
     },
@@ -201,27 +205,35 @@ export default {
       })
     },
 
-    //存储标签
-    * EFFECTS_SET_USERTAGS({payload}, { call, put , select}){
+    //设置当前每一页大小
+    * EFFECTS_SET_CURRENTSIZE({payload}, { call, put , select}){
       yield put({
-        type: 'SET_USERTAGS',
+        type: 'SET_CURRENTSIZE',
         payload: {
-          userTags: payload
+          currentSize: payload
         }
       })
     },
 
+    //清空标签
+    * EFFECTS_CLEAR_LABELS({payload}, { call, put , select}){
+      yield put({
+        type: 'SET_USERTAGS',
+        payload: {
+          userTags: []
+        }
+      })
+    },
     //修改列表客户标签
     * EFFECTS_ONCHANGELABELS({payload}, { call, put , select}){
 
       const currentPage = yield select(({allworktask}) => allworktask.currentPage)
+      const currentSize = yield select(({allworktask}) => allworktask.currentSize)
       yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
       const { result, obj, msg } = yield call(allworktaskApi.changeLabels, payload);
       if (result === 1 ) {
         message.success('编辑标签成功!')
-
-        yield put(_mmAction('EFFECTS_GET_ORDERLIST',{ page:currentPage, limit: 10, status: '99' }))
-
+        yield put(_mmAction('EFFECTS_GET_ORDERLIST',{ page:currentPage, limit: currentSize, status: '99' }))
       } else {
         message.error(msg)
         yield put(_mmAction('IS_SHOWLOADING',{loading: false}))
@@ -231,12 +243,13 @@ export default {
     // 激活工单
     * EFFECTS_ACTIVE_ORDER({payload}, { call, put , select}){
       const currentPage = yield select(({allworktask}) => allworktask.currentPage)
+      const currentSize = yield select(({allworktask}) => allworktask.currentSize)
       yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
       const { result, obj, msg } = yield call(allworktaskApi.activationDetail, payload);
       if (result === 1 ) {
         yield put(_mmAction('EFFECTS_GET_ORDERLIST',{
           page:currentPage,
-          limit: 10,
+          limit: currentSize,
           status: '99'
         }))
         yield put(_mmAction('IS_SHOWMODAL',{visible: false, title: ''}))
@@ -257,17 +270,90 @@ export default {
       })
     },
 
+      //批量共享客户
+      * EFFECTS_SHARINGCUSTOMER ({payload}, { call, put , select}){
+        let adminids = []
+        let adminNames = ''
+        let arr2 = []
+        payload.adminid.forEach( e => {
+          adminids.push(e.key)
+          arr2.push(e.label)
+        })
+        adminNames = arr2.join(',')
+        const currentPage = yield select(({allworktask}) => allworktask.currentPage)
+        const currentSize = yield select(({allworktask}) => allworktask.currentSize)
+        yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
+        const { result, obj, msg } = yield call(allworktaskApi.sharingOrder, {...payload, adminids, adminNames});
+        if (result === 1 ) {
+          yield put(_mmAction('EFFECTS_GET_ORDERLIST',{
+            page:currentPage,
+            limit: currentSize,
+            status: '99'
+          }))
+          yield put(_mmAction('IS_SHOWMODAL',{visible: false, title: ''}))
+          message.success('操作成功!')
+        } else {
+          message.error(msg)
+          yield put(_mmAction('IS_SHOWLOADING',{loading: false}))
+        }
+      },
+
+
+
     //收费登记
     * EFFECTS_CHARGESAVE({payload}, { call, put , select}){
+      const currentSize = yield select(({allworktask}) => allworktask.currentSize)
       let data = _mmTimeToStamp(payload,['payTime'],'YYYY/MM/DD')
       const { result, obj, msg } = yield call(allworktaskApi.chargeSave, data);
       if (result === 1 ) {
         message.success('收费登记成功!')
-        yield put(_mmAction('EFFECTS_GET_ORDERLIST',{ page:currentPage, limit: 10, status: '99' }))
+        yield put(_mmAction('EFFECTS_GET_ORDERLIST',{ page:currentPage, limit: currentSize, status: '99' }))
       } else {
         message.error(msg)
       }
     },
+
+    //批量关闭工单
+    * EFFECTS_CLOSE_ORDER ({payload}, { call, put , select}){
+      let ordernos = payload.ordernos ? payload.ordernos.join(',') : ''
+      const currentPage = yield select(({allworktask}) => allworktask.currentPage)
+      const currentSize = yield select(({allworktask}) => allworktask.currentSize)
+      yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
+      const { result, obj, msg } = yield call(allworktaskApi.closeOrder, {...payload,ordernos});
+      if (result === 1 ) {
+        yield put(_mmAction('EFFECTS_GET_ORDERLIST',{
+          page:currentPage,
+          limit: currentSize,
+          status: '99'
+        }))
+        yield put(_mmAction('IS_SHOWMODAL',{visible: false, title: ''}))
+        message.success('操作成功!')
+      } else {
+        message.error(msg)
+        yield put(_mmAction('IS_SHOWLOADING',{loading: false}))
+      }
+    },
+
+    //发送短信
+    * EFFECTS_SENDMESSAGE({payload}, { call, put , select}){
+      const currentPage = yield select(({allworktask}) => allworktask.currentPage)
+      const currentSize = yield select(({allworktask}) => allworktask.currentSize)
+      yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
+      const { result, obj, msg } = yield call(allworktaskApi.sendMessage, {...payload});
+      if (result === 1 ) {
+        yield put(_mmAction('EFFECTS_GET_ORDERLIST',{
+          page:currentPage,
+          limit: currentSize,
+          status: '99'
+        }))
+        yield put(_mmAction('IS_SHOWMODAL',{visible: false, title: ''}))
+        message.success(msg,5)
+      } else {
+        message.error(msg,5)
+        yield put(_mmAction('IS_SHOWLOADING',{loading: false}))
+      }
+    },
+
 
   },
 
@@ -305,6 +391,9 @@ export default {
     SET_SELECTEDLIST(state, { payload }) {
       return { ...state, ...payload }
     },
+    SET_CURRENTSIZE(state, { payload }) {
+      return { ...state, ...payload }
+    },
   },
 
   subscriptions: {
@@ -318,7 +407,6 @@ export default {
               page:1,
               limit: 10,
               initEntry: false,
-
             }
           })
         }

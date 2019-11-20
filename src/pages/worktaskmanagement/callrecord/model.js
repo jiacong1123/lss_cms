@@ -25,6 +25,7 @@ export default {
 
     SMSRecordList: [],    //短信消息列表
     empNo: '',
+    currentSize: 10,  //每页大小
   },
 
   effects: {
@@ -156,6 +157,17 @@ export default {
          }
        })
      },
+     //设置当前每一页大小
+     * EFFECTS_SET_CURRENTSIZE({payload}, { call, put , select}){
+       yield put({
+         type: 'SET_CURRENTSIZE',
+         payload: {
+           currentSize: payload
+         }
+       })
+     },
+
+
   },
 
   reducers: {
@@ -166,6 +178,9 @@ export default {
       return { ...state, ...payload }
     },
     SET_CURRENTPAGE(state, { payload }) {
+      return { ...state, ...payload }
+    },
+    SET_CURRENTSIZE(state, { payload }) {
       return { ...state, ...payload }
     },
   },

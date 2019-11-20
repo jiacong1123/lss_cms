@@ -1,7 +1,11 @@
 import React from 'react'
-import { Modal, Form } from 'antd';
+import { Modal, Form, message } from 'antd';
 import ComSave from '../save'
 import ComBatch from '../batch'
+import ComClose from '../close'
+import Sharing from '../sharing'
+import SendMessage from '../sendMessage'
+
 import PropTypes from 'prop-types'
 import styles from './index.less'
 
@@ -9,16 +13,20 @@ import styles from './index.less'
 class ComModal extends React.Component {
 
     // 收集表单
-    onOk = () => {
-       const { modalKey } = this.props
-       if ( modalKey === 'add' || modalKey === 'edit' || modalKey === 'batch' || modalKey === 'single'){
-            this.props.form.validateFields((err, values) => {
-                if (!err) {
-                    this.props.onOk(values)
-                }
-            })
-       }
-    }
+onOk = () => {
+   const { modalKey, selectedList } = this.props
+   if (selectedList.length == 0) {
+     message.error('收信人不能为空!')
+     return false
+   }
+   if(modalKey === 'add' || modalKey === 'edit' || modalKey === 'batch' || modalKey === 'single' || modalKey === 'close' || modalKey === 'sharing' || modalKey === 'sendMessage'){
+        this.props.form.validateFields((err, values) => {
+            if (!err) {
+                this.props.onOk(values)
+            }
+        })
+   }
+}
 
     // 关闭模态框，清空表单
     onCancel = () => {
@@ -32,6 +40,12 @@ class ComModal extends React.Component {
             return <ComSave {...this.props}/>
         } else if ( modalKey === 'batch' || modalKey === 'single' ) {
             return <ComBatch {...this.props}/>
+        } else if (modalKey === 'close') {
+          return <ComClose {...this.props}/>
+        } else if (modalKey === 'sharing') {
+          return <Sharing {...this.props}/>
+        } else if (modalKey === 'sendMessage') {          
+          return <SendMessage {...this.props}/>
         }
     }
 

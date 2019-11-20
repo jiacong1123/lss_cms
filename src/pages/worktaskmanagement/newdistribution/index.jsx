@@ -89,6 +89,14 @@ const parentNamespace = 'worktaskmanagement'
       )
     )
   },
+  onSetCurrentSize(payload){
+    dispatch(
+      _mmAction(
+        `${namespace}/EFFECTS_SET_CURRENTSIZE`,
+        payload
+      )
+    )
+  },
   onGetSearchValue(payload){
     dispatch(
       _mmAction(

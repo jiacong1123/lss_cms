@@ -15,6 +15,7 @@ export default {
     total: null,       // 工单总条数
     currentPage: 1,    // 当前页码
     searchValue: {},    // 搜索条件
+    currentSize: 10,  //每页大小
   },
 
   effects: {
@@ -74,11 +75,21 @@ export default {
         }
       })
     },
+    //设置当前每一页大小
+    * EFFECTS_SET_CURRENTSIZE({payload}, { call, put , select}){
+      yield put({
+        type: 'SET_CURRENTSIZE',
+        payload: {
+          currentSize: payload
+        }
+      })
+    },
 
     //更新未接来电状态
     * EFFECTS_UPDATESTATUS({payload}, { call, put,select }) {
       const searchValue = !payload.initEntry ? yield select(({missedcalls}) => missedcalls.searchValue) : {}
       const currentPage = yield select(({missedcalls}) => missedcalls.currentPage)
+      const currentSize = yield select(({missedcalls}) => missedcalls.currentSize)
       payload['page'] = payload.page ? payload.page : currentPage
 
       const userinfo = store.get('userinfo')
@@ -88,7 +99,7 @@ export default {
       if (result === 1) {
         // yield put(_mmAction('EFFECTS_GET_ORDERLIST',{
         //   page:currentPage,
-        //   limit: 10,
+        //   limit: currentSize,
         //   status:99,
         //   adminid,
         //   loginame
@@ -112,6 +123,9 @@ export default {
       return { ...state, ...payload }
     },
     IS_SHOWLOADING(state, { payload }) {
+      return { ...state, ...payload }
+    },
+    SET_CURRENTPAGE(state, { payload }) {
       return { ...state, ...payload }
     },
   },

@@ -12,6 +12,7 @@ class Filter extends React.Component {
 
     // 收集表单
     handleSearch = () => {
+      const { currentSize } = this.props
         const { validateFields } = this.props.form
         validateFields((err, values) => {
             if (!err) {
@@ -27,19 +28,20 @@ class Filter extends React.Component {
                 values.endDate  = ''
               }
                 this.props.onGetSearchValue(values)
-                this.props.onGetOrderList({ ...values, page: 1, limit: 10 })
+                this.props.onGetOrderList({ ...values, page: 1, limit: currentSize })
             }
         })
     }
 
     handleReset = () => {
+        const { currentSize } = this.props
         this.props.onResetSearchValue()
-        this.props.onGetOrderList({ page: 1, limit: 10 })
+        this.props.onGetOrderList({ page: 1, limit: currentSize })
         this.props.form.resetFields()
     }
 
     handleChange = (key, values) => {
-        const { form, onFilterChange } = this.props
+        const { form, onFilterChange, currentSize } = this.props
         const { getFieldsValue } = form
 
         let fields = getFieldsValue()
@@ -57,7 +59,7 @@ class Filter extends React.Component {
           fields.endDate  = ''
         }
         this.props.onGetSearchValue(fields)
-        this.props.onGetOrderList({ ...fields, page: 1, limit: 10 })
+        this.props.onGetOrderList({ ...fields, page: 1, limit: currentSize })
     }
 
     render() {

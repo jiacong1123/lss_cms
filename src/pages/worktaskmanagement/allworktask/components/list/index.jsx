@@ -1,6 +1,6 @@
 import React from 'react'
 import {
-    ConfigProvider, Table ,Modal,Avatar,Button,Icon, Radio, InputNumber,Form, Row, Col, DatePicker, Input, Tooltip
+    ConfigProvider, Table ,Modal,Avatar,Button,Icon, Radio, InputNumber,Form, Row, Col, DatePicker, Input, Tooltip, Checkbox
 } from 'antd';
 import store from 'store'
 import { DropOption } from 'components'
@@ -13,9 +13,10 @@ const RadioGroup = Radio.Group
 const { TextArea } = Input
 const { RangePicker } = DatePicker
 
-let radioArr = {}
+
 let userLabes = []
 let userid = ''
+let tagsName = []
 
 const formItemLayout = {
     labelCol: {
@@ -31,9 +32,9 @@ const formItemLayout = {
 class PayForm extends React.Component {
       state = {
         pagination: {
-          // showSizeChanger: true,
-          // onShowSizeChange: (current,pageSize) => this.onShowSizeChange(current,pageSize),
-          // pageSizeOptions: ['10', '20', '50', '100']
+          showSizeChanger: true,
+          onShowSizeChange: (current,pageSize) => this.onShowSizeChange(current,pageSize),
+          pageSizeOptions: ['10', '20', '50', '100']
         },
         visible: false,
         userTags: [],
@@ -170,19 +171,20 @@ class PayForm extends React.Component {
       this.props.clearCurrentCallInfo()
       this.props.onBindCallPhone(record)
     }
- 
+
     // 处理分页
     handleTableChange = (pagination, filters, sorter) => {
       const { searchValue } =  this.props
       searchValue.status ? searchValue.status : searchValue.status = '99'
       this.props.onSetCurrentPage(pagination.current)
-      this.props.onGetOrderList({page: pagination.current, limit:10,...searchValue })
+      this.props.onGetOrderList({page: pagination.current, limit:pagination.pageSize,...searchValue })
     }
 
     //改变每页条数
     onShowSizeChange = (current, pageSize) => {
       const { searchValue } =  this.props
       searchValue.status ? searchValue.status : searchValue.status = '99'
+      this.props.onSetCurrentSize(pageSize)
       this.props.onGetOrderList({page: 1, limit:pageSize, ...searchValue })
     }
 
@@ -190,11 +192,28 @@ class PayForm extends React.Component {
     handleLabels = (record) => {
       userLabes = []
       const { lablenames } = record
+      const { customerTagsList } = this.props
+
       if (lablenames != null) {
+        this.props.SetDefaultLabels(lablenames.split(','))
         this.setState({
           userTags: lablenames.split(',')
         });
+        let aaa = lablenames.split(',')
+
+        customerTagsList.forEach( (op, key) => {
+          op.child.forEach((c) => {
+            aaa.forEach( (e, index) => {
+              if (c.tagname == e) {
+                userLabes[key] = e
+              }
+            })
+          })
+        })
+        // console.log(userLabes)
+        // userLabes = userLabes.concat(aaa)
       }
+
       userid = record.userid
       this.setState({
         visible: true,
@@ -205,30 +224,47 @@ class PayForm extends React.Component {
       this.setState({
         visible: false,
       });
-      if (Object.keys(radioArr).length > 0) {
-        for(var i in radioArr){
-          userLabes.push(radioArr[i])
+      const { userTags } = this.state
+      let aa = []
+      let bb = []
+      userLabes.forEach( (index) => {
+        if (typeof(index) == 'object') {
+          aa.push(index)
+          aa = aa.flat()
         }
-        userLabes = Array.from(new Set(userLabes))
-      }
-      if (userLabes.length > 0) {
+        if (typeof(index) == 'string') {
+          bb.push(index)
+        }
+         tagsName = aa.concat(bb)
+      })
+      if (tagsName.length > 0) {
         this.props.onChangeLabels({
-          labels: userLabes.join(','),
+          labels: tagsName.join(','),
+          userid: userid
+        })
+      }else {
+        this.props.onChangeLabels({
+          labels: '',
           userid: userid
         })
       }
+      userLabes = []
+      tagsName = []
     };
 
     handleCancel = e => {
+      //清空存储的标签
+      // this.props.chearLabels()
+
       this.setState({
         visible: false,
       });
     };
 
-    onChangeRadio = (e, index) => {
-       radioArr[index+'_ind'] = e.target.value
+     onChangeLaels = (e, index) => {
+       userLabes[index] = e
+       // userLabes = Array.from(new Set(userLabes))
      }
-
      //收费登记
      handleCharge = (record) => {
         this.setState({
@@ -299,7 +335,6 @@ class PayForm extends React.Component {
                 { status == 3 ? '已到店' :''}
                 { status == 4 ? '已完成' :''}
                 { status == 5 ? '已关闭' :''}
-
               </div>
               )
             }
@@ -320,7 +355,7 @@ class PayForm extends React.Component {
                 <p>
                 <span style={{marginRight:20}}>{lablenames}</span>
                 {
-                  lablenames === null ?
+                  lablenames === null || lablenames == ""  ?
                   <Button size="small" type="primary" onClick={e => this.handleLabels(record)}>
                   <Icon type="plus-circle" theme="twoTone" /></Button> :
                   <Button size="small" type="primary" onClick={e => this.handleLabels(record)}>
@@ -422,16 +457,12 @@ class PayForm extends React.Component {
             }
           }
       ]
-      const { rowSelection,orderlist, loading, total, currentPage, customerTagsList, form } = this.props
+      const { rowSelection,orderlist, loading, total, currentPage, customerTagsList, form, defaultLabels, currentSize } = this.props
       const { getFieldDecorator } = form
       const { pagination, userTags, lastReceive, lastAmount } = this.state
       pagination['total'] = total
       pagination['current'] = currentPage
-      let labelA = []
-      if(userTags.length > 0) {
-        labelA = userTags
-      }
-
+    
       return (
         <div>
           <ConfigProvider>
@@ -453,28 +484,28 @@ class PayForm extends React.Component {
             onOk={this.handleOk}
             onCancel={this.handleCancel}
           >
-
-          { customerTagsList.map((item,index) => {
+          { customerTagsList ? customerTagsList.map((item,index) => {
               return <div  style={{marginBottom: 20}}>
                 <p className={styles.borBottom}>{item.tagname}</p>
                 <div >
+                  <Checkbox.Group onChange={e => this.onChangeLaels(e, index)} key={index} defaultValue={defaultLabels}>
+                    { item.child.map( (op) => {
 
-                <Radio.Group onChange={e => this.onChangeRadio(e, index)} size="small" buttonStyle="solid">
-                  { item.child.map( (op) => {
-                        return (
-                                <Radio.Button
-                                style={{marginRight: 20, marginBottom: 10}}
-                                name="radio"
-                                key={op.id}
-                                value={op.tagname}>
-                                  {op.tagname}
-                                </Radio.Button>
-                        )
-                  })}
-                </Radio.Group>
+                          return (
+                                  <Checkbox
+                                    style={{marginRight: 10, marginBottom: 10}}
+                                    value={op.tagname}
+                                  >
+                                    {op.tagname}
+                                  </Checkbox>
+                          )
+
+                    })}
+                  </Checkbox.Group>
                 </div>
               </div>
-          }) }
+          }) : '' }
+
         </Modal>
 
         <Modal

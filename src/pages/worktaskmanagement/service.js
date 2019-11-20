@@ -76,11 +76,32 @@ export const paymentRecords = (data) => {
 
 //跟新待回访状态
 export const updateIsReturn = (data) => {
+  console.log(data);
   return request({
     url: '/workorder/updateIsReturn',
     method: 'POST',
     data:{
-      ordernos:data.orderno,
+      ordernos:data.ordernos,
+    }
+  });
+};
+
+//获取短信模板列表
+export const messageTemplate = (data) => {
+  return request({
+    url: '/sendMessage/templateList',
+    method: 'POST',
+    data:{}
+  });
+};
+
+//根据id获取短信模板
+export const messageContent = (data) => {
+  return request({
+    url: '/sendMessage/getTemplate',
+    method: 'POST',
+    data:{
+      templateId: data.templateId
     }
   });
 };

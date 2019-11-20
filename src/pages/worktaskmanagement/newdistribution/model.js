@@ -19,7 +19,8 @@ export default {
     currentPage: 1,    // 当前页码
     searchValue: {},    // 搜索条件
     selectRows_order: [], //批量勾选
-    jobordersourcechild: []
+    jobordersourcechild: [],
+    currentSize: 10,  //每页大小
   },
 
   effects: {
@@ -29,16 +30,16 @@ export default {
       yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
       const searchValue = !payload.initEntry ? yield select(({newdistribution}) => newdistribution.searchValue) : {}
       const currentPage = yield select(({newdistribution}) => newdistribution.currentPage)
-      payload['page'] = payload.page ? payload.page : currentPage
+      const {page} = payload
+      currentPage ? payload.page = currentPage : payload.page
       const status = 10
       const { result, obj , total, msg  } = yield call(newdistributionApi.getOrderList, {...searchValue,...payload, status})
 
       if (result === 1) {
-        console.log(obj);
         yield put(_mmAction('GET_ORDERLIST',{
           orderlist: obj,
           total,
-          currentPage: payload.page ? payload.page : currentPage,
+          currentPage: currentPage ? currentPage : page,
           loading: false,
           currentOrder:{},
           searchValue
@@ -76,13 +77,14 @@ export default {
     // 添加/编辑工单
     * EFFECTS_SAVE_ORDER({payload}, { call, put , select}) {
       const currentPage = yield select(({newdistribution}) => newdistribution.currentPage)
+      const currentSize = yield select(({newdistribution}) => newdistribution.currentSize)
       yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
       const data =  _mmAddressSplit(_mmTimeToStamp(payload,['sourcedate','reservedate']),['province','city'])
       const { result, obj, msg } = yield call(newdistributionApi.saveOrder, data);
       if (result === 1 ) {
         yield put(_mmAction('EFFECTS_GET_ORDERLIST',{
           page:currentPage,
-          limit: 10
+          limit: currentSize
         }))
         yield put(_mmAction('IS_SHOWMODAL',{visible: false, title: ''}))
         yield put(_mmAction('SET_USERID',{userid: '' }))
@@ -160,7 +162,15 @@ export default {
         }
       })
     },
-
+    //设置当前每一页大小
+    * EFFECTS_SET_CURRENTSIZE({payload}, { call, put , select}){
+      yield put({
+        type: 'SET_CURRENTSIZE',
+        payload: {
+          currentSize: payload
+        }
+      })
+    },
     //点击聊天，在详情里产生聊天记录
    * EFFECT_CREAT_CHATRECORD({payload}, { call, put , select}){
           const { orderno, shopWx, memberNo } = payload
@@ -186,11 +196,12 @@ export default {
         * EFFECTS_BATCH_ORDER({payload}, { call, put , select}){
           yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
           const currentPage = yield select(({newdistribution}) => newdistribution.currentPage)
+          const currentSize = yield select(({newdistribution}) => newdistribution.currentSize)
           const { result, obj, msg } = yield call(newdistributionApi.getBatchOrder, payload);
           if (result === 1 ) {
             yield put(_mmAction('EFFECTS_GET_ORDERLIST',{
               page:currentPage,
-              limit: 10
+              limit: currentSize
             }))
             yield put(_mmAction('IS_SHOWMODAL',{visible: false, title: ''}))
             message.success('转移成功!')
@@ -203,11 +214,12 @@ export default {
         //修改列表客户标签
         * EFFECTS_ONCHANGELABELS({payload}, { call, put , select}){
           const currentPage = yield select(({newdistribution}) => newdistribution.currentPage)
+          const currentSize = yield select(({newdistribution}) => newdistribution.currentSize)
           yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
           const { result, obj, msg } = yield call(newdistributionApi.changeLabels, payload);
           if (result === 1 ) {
             message.success('编辑标签成功!')
-            yield put(_mmAction('EFFECTS_GET_ORDERLIST',{ page:currentPage, limit: 10 }))
+            yield put(_mmAction('EFFECTS_GET_ORDERLIST',{ page:currentPage, limit: currentSize }))
           } else {
             message.error(msg)
             yield put(_mmAction('IS_SHOWLOADING',{loading: false}))
@@ -244,6 +256,9 @@ export default {
       return { ...state, ...payload }
     },
     GET_SOURCECHILD(state, { payload }) {
+      return { ...state, ...payload }
+    },
+    SET_CURRENTSIZE(state, { payload }) {
       return { ...state, ...payload }
     },
   },

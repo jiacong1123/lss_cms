@@ -63,6 +63,8 @@ export default {
             router.push({ pathname: '/worktaskmanagement/berecycled' })
           } else if (urlParams.type == 'allworktask') {
             router.push({ pathname: '/worktaskmanagement/allworktask' })
+          } else if (urlParams.type == 'sharingCustomer' || urlParams.type == 'sharingOut') {
+            router.push({ pathname: '/worktaskmanagement/sharingCustomer' })
           } else {
             router.push({ pathname: '/worktaskmanagement/waitfollowup' })
           }
@@ -105,6 +107,8 @@ export default {
             router.push({ pathname: '/worktaskmanagement/berecycled' })
           } else if (urlParams.type == 'allworktask') {
             router.push({ pathname: '/worktaskmanagement/allworktask' })
+          } else if (urlParams.type == 'sharingCustomer' || urlParams.type == 'sharingOut') {
+            router.push({ pathname: '/worktaskmanagement/sharingCustomer' })
           } else {
             router.push({ pathname: '/worktaskmanagement/waitfollowup' })
           }
@@ -144,6 +148,8 @@ export default {
             router.push({ pathname: '/worktaskmanagement/berecycled' })
           } else if (urlParams.type == 'allworktask') {
             router.push({ pathname: '/worktaskmanagement/allworktask' })
+          } else if (urlParams.type == 'sharingCustomer' || urlParams.type == 'sharingOut') {
+            router.push({ pathname: '/worktaskmanagement/sharingCustomer' })
           } else {
             router.push({ pathname: '/worktaskmanagement/waitfollowup' })
           }
@@ -182,6 +188,8 @@ export default {
             router.push({ pathname: '/worktaskmanagement/berecycled' })
           } else if (urlParams.type == 'allworktask') {
             router.push({ pathname: '/worktaskmanagement/allworktask' })
+          } else if (urlParams.type == 'sharingCustomer' || urlParams.type == 'sharingOut') {
+            router.push({ pathname: '/worktaskmanagement/sharingCustomer' })
           } else {
             router.push({ pathname: '/worktaskmanagement/waitfollowup' })
           }
@@ -190,6 +198,8 @@ export default {
             router.push({ pathname: '/worktaskmanagement/berecycled' })
           } else if(urlParams.type == 'allworktask') {
             router.push({ pathname: '/worktaskmanagement/allworktask' })
+          } else if (urlParams.type == 'sharingCustomer' || urlParams.type == 'sharingOut') {
+            router.push({ pathname: '/worktaskmanagement/sharingCustomer' })
           } else {
             router.push({ pathname: '/worktaskmanagement/alreadyreserved' })
           }
@@ -204,13 +214,15 @@ export default {
         yield put(_mmAction(`${parentNamespace}/IS_SHOWLOADING`,{loading: false}))
       }
     },
-    // 转跟进
+
+    // 未到店 、转跟进
     * EFFECTS_TURNFOLLOWUP_ORDER({payload}, { call, put,  select }) {
       const urlParams = yield select(({worktaskmanagement}) => worktaskmanagement.urlParams)
       // const orderno = yield select(({worktaskmanagement}) => worktaskmanagement.orderno)
       const orderno = urlParams.orderno
       yield put(_mmAction(`${parentNamespace}/IS_SHOWLOADING`,{loading: true}))
-      const { result, obj ,msg} = yield call(handleworktaskApi.turnfollowupOrder, {orderno, ...payload});
+      let status = urlParams.key == 2 ? 1 : ''
+      const { result, obj ,msg} = yield call(handleworktaskApi.turnfollowupOrder, {orderno, ...payload,status});
       if (result === 1) {
         yield put(_mmAction(`${parentNamespace}/IS_SHOWLOADING`,{loading: false}))
         /*
@@ -226,6 +238,8 @@ export default {
             router.push({ pathname: '/worktaskmanagement/berecycled' })
           } else if (urlParams.type == 'allworktask') {
             router.push({ pathname: '/worktaskmanagement/allworktask' })
+          } else if (urlParams.type == 'sharingCustomer' || urlParams.type == 'sharingOut') {
+            router.push({ pathname: '/worktaskmanagement/sharingCustomer' })
           } else {
             router.push({ pathname: '/worktaskmanagement/waitfollowup' })
           }
@@ -234,6 +248,8 @@ export default {
             router.push({ pathname: '/worktaskmanagement/berecycled' })
           } else if(urlParams.type == 'allworktask') {
             router.push({ pathname: '/worktaskmanagement/allworktask' })
+          } else if (urlParams.type == 'sharingCustomer' || urlParams.type == 'sharingOut') {
+            router.push({ pathname: '/worktaskmanagement/sharingCustomer' })
           } else {
             router.push({ pathname: '/worktaskmanagement/alreadyreserved' })
           }
@@ -242,6 +258,8 @@ export default {
             router.push({ pathname: '/worktaskmanagement/berecycled' })
           } else if(urlParams.type == 'allworktask') {
             router.push({ pathname: '/worktaskmanagement/allworktask' })
+          } else if (urlParams.type == 'sharingCustomer' || urlParams.type == 'sharingOut') {
+            router.push({ pathname: '/worktaskmanagement/sharingCustomer' })
           } else {
             router.push({ pathname: '/worktaskmanagement/alreadyshop' })
           }
@@ -277,6 +295,8 @@ export default {
             router.push({ pathname: '/worktaskmanagement/berecycled' })
           } else if (urlParams.type == 'allworktask') {
             router.push({ pathname: '/worktaskmanagement/allworktask' })
+          } else if (urlParams.type == 'sharingCustomer' || urlParams.type == 'sharingOut') {
+            router.push({ pathname: '/worktaskmanagement/sharingCustomer' })
           } else {
             router.push({ pathname: '/worktaskmanagement/waitfollowup' })
           }
@@ -285,6 +305,8 @@ export default {
             router.push({ pathname: '/worktaskmanagement/berecycled' })
           } else if (urlParams.type == 'allworktask') {
             router.push({ pathname: '/worktaskmanagement/allworktask' })
+          } else if (urlParams.type == 'sharingCustomer' || urlParams.type == 'sharingOut') {
+            router.push({ pathname: '/worktaskmanagement/sharingCustomer' })
           } else {
             router.push({ pathname: '/worktaskmanagement/alreadyreserved' })
           }
@@ -322,6 +344,8 @@ export default {
             router.push({ pathname: '/worktaskmanagement/berecycled' })
           } else if (urlParams.type == 'allworktask') {
             router.push({ pathname: '/worktaskmanagement/allworktask' })
+          } else if (urlParams.type == 'sharingCustomer' || urlParams.type == 'sharingOut') {
+            router.push({ pathname: '/worktaskmanagement/sharingCustomer' })
           } else {
             router.push({ pathname: '/worktaskmanagement/waitfollowup' })
           }
@@ -332,6 +356,8 @@ export default {
             router.push({ pathname: '/worktaskmanagement/berecycled' })
           } else if(urlParams.type == 'allworktask') {
             router.push({ pathname: '/worktaskmanagement/allworktask' })
+          } else if (urlParams.type == 'sharingCustomer' || urlParams.type == 'sharingOut') {
+            router.push({ pathname: '/worktaskmanagement/sharingCustomer' })
           } else {
             router.push({ pathname: '/worktaskmanagement/alreadyshop' })
           }
@@ -346,17 +372,18 @@ export default {
     },
     //修改列表客户标签
     * EFFECTS_ONCHANGELABELS({payload}, { call, put , select}){
-      const urlParams = yield select(({worktaskmanagement}) => worktaskmanagement.urlParams)
+      let urlParams = yield select(({worktaskmanagement}) => worktaskmanagement.urlParams)
       // const orderno = yield select(({worktaskmanagement}) => worktaskmanagement.orderno)
-      const orderno = urlParams.orderno
+      let orderno = urlParams.orderno
       yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
       const { result, obj, msg } = yield call(handleworktaskApi.changeLabels, payload);
       if (result === 1 ) {
         message.success('编辑标签成功!')
-        router.replace({
-          pathname: '/worktaskmanagement/handleworktask',
-          query: { key: urlParams.key, orderno }
-        })
+        yield put(_mmAction('EFFECTS_GET_ORDERDETAIL',urlParams))
+        // router.replace({
+        //   pathname: '/worktaskmanagement/handleworktask',
+        //   query: { key: urlParams.key, orderno }
+        // })
       } else {
         message.error(msg)
         yield put(_mmAction('IS_SHOWLOADING',{loading: false}))
@@ -375,6 +402,8 @@ export default {
 
   subscriptions: {
     setupHistory({ dispatch, history }) {
+        const params = history.location.query
+        console.log(params);
       return history.listen(({ pathname }) => {
         if( pathname === '/worktaskmanagement/handleworktask') {
           const { orderno, key, type } = history.location.query
@@ -385,6 +414,7 @@ export default {
               type
             }
           })
+
           // dispatch({ type: `${parentNamespace}/EFFECTS_GET_ORDERDETAIL`,
           //   payload: {
           //     key,

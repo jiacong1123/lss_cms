@@ -46,7 +46,7 @@ onAlreadyShop(payload){
         payload
     )
    )
-  
+
 },
   onGetCurrentClue(payload){
     dispatch(
@@ -112,7 +112,7 @@ class Alreadydisclue extends React.Component {
       this.props.onIsShowModal({visible:false,title:'',currentClue:{}})
     }
   }
- 
+
   render() {
     const {  selectedRowKeys } = this.state;
     const rowSelection = {
@@ -125,13 +125,19 @@ class Alreadydisclue extends React.Component {
       <div className={styles.alreadydiscluePage}>
         <Filter {...this.props}/>
          <div className={styles.tableListBox}>
-          <List 
-              rowSelection={rowSelection} 
+         <Oper
+             cleanSelectedKeys={this.cleanSelectedKeys}
+             selectedRowKeys={selectedRowKeys}
+             hasSelected={hasSelected}
+             {...this.props}
+           />
+          <List
+              rowSelection={rowSelection}
               {...this.props}
           />
-          <ComModal 
-            {...this.props} 
-            onOk={this.onModalOk} 
+          <ComModal
+            {...this.props}
+            onOk={this.onModalOk}
           />
           </div>
       </div>

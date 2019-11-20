@@ -74,12 +74,18 @@ export default [
                 path: '/worktaskmanagement',
                 breadcrumb: '工单管理',
                 routes: [
-                  {
-                      path: '/worktaskmanagement/allworktask',
-                      component: './worktaskmanagement/allworktask',
-                      breadcrumb: '全部工单',
-                      title: '乐莎莎管理后台-全部工单'
-                  },
+                    {
+                        path: '/worktaskmanagement/sharingCustomer',
+                        component: './worktaskmanagement/sharingCustomer',
+                        breadcrumb: '共享客户',
+                        title: '乐莎莎管理后台-共享客户'
+                    },
+                    {
+                        path: '/worktaskmanagement/allworktask',
+                        component: './worktaskmanagement/allworktask',
+                        breadcrumb: '全部工单',
+                        title: '乐莎莎管理后台-全部工单'
+                    },
                     {
                         path: '/worktaskmanagement/waitdistribution',
                         component: './worktaskmanagement/waitdistribution',

@@ -6,13 +6,15 @@ import List from './components/list'
 import Oper from './components/oper'
 import ComModal from './components/modal'
 import styles from './index.less'
-
+import store from 'store'
 const namespace = 'allworktask'
+const parentNamespace = 'worktaskmanagement'
 let userLabes = []
 let lablenames = ""
 
-@connect(({layout,allworktask}) => ({
+@connect(({layout,allworktask,worktaskmanagement}) => ({
   ...layout,
+  ...worktaskmanagement,
   ...allworktask,
 }),(dispatch)=>({
   onGetSourceChild(payload) {
@@ -97,6 +99,14 @@ let lablenames = ""
       )
     )
   },
+  onSetCurrentSize(payload){
+    dispatch(
+      _mmAction(
+        `${namespace}/EFFECTS_SET_CURRENTSIZE`,
+        payload
+      )
+    )
+  },
   onGetSearchValue(payload){
     dispatch(
       _mmAction(
@@ -121,18 +131,26 @@ let lablenames = ""
       )
     )
   },
-  onSetUserTags(payload) {
-    dispatch(
-      _mmAction(
-        `${namespace}/EFFECTS_SET_USERTAGS`,
-        payload
-      )
-    )
-  },
   onChangeLabels(payload) {
     dispatch(
       _mmAction(
         `${namespace}/EFFECTS_ONCHANGELABELS`,
+        payload
+      )
+    )
+  },
+  SetDefaultLabels(payload) {
+    dispatch(
+      _mmAction(
+        `${parentNamespace}/EFFECTS_SET_DEFAULTLABELS`,
+        payload
+      )
+    )
+  },
+  chearLabels(payload){
+    dispatch(
+      _mmAction(
+        `${parentNamespace}/EFFECTS_CLEAR_LABELS`,
         payload
       )
     )
@@ -161,7 +179,63 @@ let lablenames = ""
         payload
       )
     )
-  }
+  },
+  onCloseOrder(payload) {
+    dispatch(
+      _mmAction(
+        `${namespace}/EFFECTS_CLOSE_ORDER`,
+        payload
+      )
+    )
+  },
+
+  //共享客户
+  sharingCustomer(payload) {
+    dispatch(
+      _mmAction(
+        `${namespace}/EFFECTS_SHARINGCUSTOMER`,
+        payload
+      )
+    )
+  },
+  //获取短信模板列表
+  getMessageList(payload){
+    dispatch(
+      _mmAction(
+        `${parentNamespace}/EFFECTS_MESSAGE_TEMPLATELIST`,
+        payload
+      )
+    )
+  },
+  //根据模板id 获取短信内容
+  getMessageContent(payload){
+    dispatch(
+      _mmAction(
+        `${parentNamespace}/EFFECTS_MESSAGE_CONTENT`,
+        payload
+      )
+    )
+  },
+
+  //清空短信内容
+  clearMessageContent(payload){
+    dispatch(
+      _mmAction(
+        `${parentNamespace}/EFFECTS_CLEAR_MESSAGECONTENT`,
+        payload
+      )
+    )
+  },
+  //发送短信
+  sendMessage(payload){
+    dispatch(
+      _mmAction(
+        `${namespace}/EFFECTS_SENDMESSAGE`,
+        payload
+      )
+    )
+  },
+
 }))
 
 
@@ -174,9 +248,8 @@ class allworktask extends React.Component {
     ordernos: []
   }
   onSelectChange = (selectedRowKeys,e) => {
-
     //当前勾选的列表
-    // this.props.onSaveSelected(e)
+    this.props.onSaveSelected(e)
     const ordernos = e.map(item=>item['orderno'])
     this.setState({ selectedRowKeys, ordernos});
   }
@@ -189,8 +262,8 @@ class allworktask extends React.Component {
   // 点击modal确定按钮并处理请求
   onModalOk = (values) => {
 
-    const { modalKey, orderno, currentOrder,userid, sourceChild, userTags } = this.props
-    const { ordernos } = this.state
+    const { modalKey, orderno, currentOrder,userid, sourceChild, userTags, selectedList } = this.props
+    const { ordernos, selectedRowKeys } = this.state
     if(sourceChild) {
       const { tagname } = sourceChild
     }
@@ -224,18 +297,32 @@ class allworktask extends React.Component {
     } else if (modalKey === 'single') {
       // 单个转移
       this.props.onGetBatchOrder({...values,ordernos:[orderno]})
+    } else if (modalKey === 'close') {
+      //批量关闭
+      this.props.onCloseOrder({...values,ordernos})
+      this.setState({ selectedRowKeys:[], ordernos:[]})
+    } else if (modalKey === 'sharing') {
+      this.props.sharingCustomer({...values,ordernos})
+      this.setState({ selectedRowKeys:[], ordernos:[]})
+    } else if (modalKey === 'sendMessage') {
+      const { messageContent } = this.props
+      const phone = selectedList.map(item=>item['phone'])
+      this.props.sendMessage({...values,phone,messageContent})
+      this.setState({ selectedRowKeys:[], ordernos:[]})
     }
   }
 
   render() {
     const {  selectedRowKeys } = this.state;
+    let userinfo = store.get('userinfo')
     const rowSelection = {
       selectedRowKeys,
       onChange: this.onSelectChange,
-      getCheckboxProps: record => ({
-        disabled: record.status !== 1, // 仅新分配可以分配
-        status: record.status ,
-      }),
+      //已完成不可以勾选
+      // getCheckboxProps: record => ({
+      //   disabled: record.adminid !== userinfo.adminid,
+      //   adminid: record.adminid ,
+      // }),
     };
     const hasSelected = selectedRowKeys.length > 0;
     return (

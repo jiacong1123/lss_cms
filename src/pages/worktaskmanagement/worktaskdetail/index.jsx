@@ -388,7 +388,7 @@ class Worktaskdetail extends React.Component {
                   <Timeline.Item key={index}>
                       <p>{item.time}</p>
                       <p>{item.name}</p>
-                      <span>{item.content ? item.content : ''} : </span>
+                      <span>{item.content ? item.content : ''}</span>
                       {
                         item.remark ? item.remark : ''
                       }

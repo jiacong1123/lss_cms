@@ -32,7 +32,6 @@ class ComSave extends React.Component {
     state = {
         loading: false,
         imageUrl:null,
-        visible: false
     }
 
     getBase64 = (img, callback) => {
@@ -89,28 +88,6 @@ class ComSave extends React.Component {
       })
     }
 
-    //选择标签操作
-    showModal = () => {
-      this.setState({
-        visible: true,
-      });
-
-    };
-    handleOk = e => {
-      this.setState({
-        visible: false,
-      });
-    };
-    handleCancel = e => {
-      this.setState({
-        visible: false,
-      });
-    };
-
-   onChangeRadio = (e, index) => {
-      radioArr[index+'_ind'] = e.target.value
-      this.props.onSetUserTags(radioArr)
-    }
 
     render() {
         const { currentOrder,clinicdropmenu, jobordersource,reservedpro,electriclist,jobtitle,token,jobordersourcechild,customerTagsList, modalKey} = this.props
@@ -354,35 +331,7 @@ class ComSave extends React.Component {
 
                 </Row>
             </Form>
-            <Modal
-              title="标签管理"
-              visible={this.state.visible}
-              onOk={this.handleOk}
-              onCancel={this.handleCancel}
-            >
-            {labelA.map( i => {return <span>{i}</span>})}
-            { customerTagsList.map((item,index) => {
-                return <div  style={{marginBottom: 20}}>
-                  <p className={styles.borBottom}>{item.tagname}</p>
-                  <div >
 
-                  <Radio.Group  onChange={e => this.onChangeRadio(e, index)} size="small" buttonStyle="solid">
-                    { item.child.map( (op) => {
-                          return (
-                                  <Radio.Button
-                                  style={{marginRight: 20, marginBottom: 10}}
-                                  name="radio"
-
-                                  value={op.tagname}>
-                                    {op.tagname}
-                                  </Radio.Button>
-                          )
-                    })}
-                  </Radio.Group>
-                  </div>
-                </div>
-            }) }
-          </Modal>
         </div>
         )
     }

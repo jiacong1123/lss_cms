@@ -1,10 +1,10 @@
 
 // 创建websocket链接
 function wsInit(val)  {
-
     //重连先关闭
 	if(val=='reConn'){
 		window.ws.close();
+	
 	}
 	if("WebSocket" in window) {
         // 打开一个 web socket，全局共用一个
@@ -15,7 +15,7 @@ function wsInit(val)  {
             setTimeout(function(){
                 window.ws.send('{"cmd":"LINK"}')
                 window.ws.send('{"cmd":"USB","connected":"true","success":"true","message":"成功"}')
-            },100);
+            },1000);
         }
 
         window.ws.onmessage = function(evt,callback) {

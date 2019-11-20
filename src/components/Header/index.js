@@ -131,24 +131,24 @@ class ComHeader extends PureComponent {
             trigger="hover"
             content={
               <div>
-              { recoveryCustomerNum && recoveryCustomerNum > 0 ?
+
                     <p className={styles.newList}>
                       <span className={styles.checkDetail}>客户回收通知：你有 <span className={styles.red}>{ recoveryCustomerNum }</span> 位客户即将回收</span>
                       <Button size="small" type="primary" onClick={this.recoveryCustomer} >查看</Button>
-                    </p> : ''
-              }
-              { missedCallNum && missedCallNum > 0 ?
+                    </p>
+
+
                       <p className={styles.newList}>
                         <span className={styles.checkDetail}>未接来电通知：你有 <span className={styles.red}>{ missedCallNum }</span> 个未接来电</span>
                         <Button size="small" type="primary" onClick={this.handleMissedCalls} >查看</Button>
-                      </p> : ''
-              }
-              { returnCount && returnCount > 0 ?
+                      </p>
+
+
                   <p className={styles.newList}>
-                      <span className={styles.checkDetail}>回访提醒：你有 <span className={styles.red}>{ returnCount }</span> 个客户待回访</span>
+                      <span className={styles.checkDetail}>回访提醒：查看客户待回访列表</span>
                       <Button size="small" type="primary"  onClick={this.handleReturnVisit} >查看</Button>
-                  </p>  : ''
-              }
+                  </p>
+
               </div>
             }
           >

@@ -12,6 +12,7 @@ class Filter extends React.Component {
 
     // 收集表单
     handleSearch = () => {
+        const { currentSize } = this.props
         const { validateFields } = this.props.form
         validateFields((err, values) => {
             if (!err) {
@@ -39,28 +40,32 @@ class Filter extends React.Component {
                 values.followupTimeEnd  = ''
               }
                 let status;
-                values.status ? status = values.status : status = '99'                
+                values.status ? status = values.status : status = '99'
+                if (values.tag && values.tag.length) {
+                  values.tag = values.tag.join(',')
+                }
                 this.props.onGetSearchValue(values)
-                this.props.onGetOrderList({ ...values, page: 1, limit: 10, status: status })
+                this.props.onGetOrderList({ ...values, page: 1, limit: currentSize, status: status, })
             }
         })
     }
 
     handleReset = () => {
+        const { currentSize } = this.props
         this.props.onResetSearchValue()
-        this.props.onGetOrderList({ page: 1, limit: 10, status:'99' })
+        this.props.onGetOrderList({ page: 1, limit: currentSize, status:'99' })
         this.props.form.resetFields()
     }
 
     changeStatus = (key, values) => {
-      const { form, onFilterChange } = this.props
+      const { form, onFilterChange, currentSize } = this.props
       const { getFieldsValue } = form
 
       let fields = getFieldsValue()
       fields[key] = values
       // 查询数据
       this.props.onGetSearchValue(fields)
-      this.props.onGetOrderList({ ...fields, page: 1, limit: 10 })
+      this.props.onGetOrderList({ ...fields, page: 1, limit: currentSize })
     }
 
     handleChange = (key, values) => {
@@ -69,7 +74,7 @@ class Filter extends React.Component {
           tagid: values,
         })
       }
-        const { form, onFilterChange } = this.props
+        const { form, onFilterChange, currentSize } = this.props
         const { getFieldsValue } = form
 
         let fields = getFieldsValue()
@@ -97,16 +102,17 @@ class Filter extends React.Component {
           fields.followupTimeEnd = ''
         }
 
-        console.log(fields)
         let status;
         fields.status ? status = fields.status : status = '99'
-
+        fields.tag = fields.tag.join(',')
+        
+        // console.log(fields)
         this.props.onGetSearchValue(fields)
-        this.props.onGetOrderList({ ...fields, page: 1, limit: 10, status: status })
+        this.props.onGetOrderList({ ...fields, page: 1, limit: currentSize, status: status })
     }
 
     render() {
-        const { form, clinicdropmenu, searchValue,jobordersource, personnelList } = this.props
+        const { form, clinicdropmenu, searchValue,jobordersource, personnelList, searchTags } = this.props
         const { getFieldDecorator } = form
         return (
             <div className={styles.serchBox}>
@@ -115,20 +121,20 @@ class Filter extends React.Component {
                 >
                     <Row style={{marginBottom: 15}}>
                         <Col span={4}>
-                            <Form.Item label='客户姓名'>
+                            <Form.Item label='姓名'>
                                 {getFieldDecorator('name', {
                                     initialValue: searchValue && searchValue.name ? searchValue.name : ''
                                 })(
-                                    <Input placeholder="请输入客户姓名" />
+                                    <Input placeholder="请输入姓名" />
                                 )}
                             </Form.Item>
                         </Col>
                         <Col span={4}>
-                            <Form.Item label='客户电话'>
+                            <Form.Item label='电话'>
                                 {getFieldDecorator('phone', {
                                     initialValue: searchValue && searchValue.phone ? searchValue.phone : ''
                                 })(
-                                    <Input placeholder="请输入客户电话" />
+                                    <Input placeholder="请输入电话" />
                                 )}
                             </Form.Item>
                         </Col>
@@ -141,7 +147,6 @@ class Filter extends React.Component {
                                       showSearch
                                       placeholder="请选择"
                                       style={{ width: 100 }}
-
                                   >
                                     {/*  <Option value="0">待分配</Option>*/}
                                       <Option value="10">新分配</Option>
@@ -152,6 +157,29 @@ class Filter extends React.Component {
                                     {/*<Option value="5">已关闭</Option>*/}
                                       <Option value="99">全部</Option>
                                   </Select>
+                                )}
+                            </Form.Item>
+                        </Col>
+                        <Col span={4}>
+                            <Form.Item label='意愿等级'>
+                                {getFieldDecorator('level', {
+                                     initialValue: searchValue && searchValue.level ? searchValue.level : ''
+                                })(
+                                    <Select
+                                        showSearch
+                                        placeholder="请选择"
+                                        style={{ width: 100 }}
+                                        optionFilterProp="children"
+                                        filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                                        onChange={this.handleChange.bind(this, 'level')}
+                                    >
+                                        <Option value="">请选择</Option>
+                                        <Option value="A">A</Option>
+                                        <Option value="B">B</Option>
+                                        <Option value="C">C</Option>
+                                        <Option value="D">D</Option>
+                                        <Option value="E">E</Option>
+                                    </Select>
                                 )}
                             </Form.Item>
                         </Col>
@@ -220,12 +248,12 @@ class Filter extends React.Component {
                                 })(
                                     <Select
                                         showSearch
-                                        placeholder="请选择来源"
+                                        placeholder="请选择客户来源"
                                         optionFilterProp="children"
                                         filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                                         onChange={this.handleChange.bind(this, 'sourceid')}
                                     >
-                                        <Option key='' value=''>选择来源</Option>
+                                        <Option key='' value=''>选择客户来源</Option>
                                         {jobordersource && jobordersource.length > 0 ? jobordersource.map(item => {
                                             return <Option key={item.tagid} value={item.tagid}>{item.tagname}</Option>
                                         }) : null}
@@ -233,13 +261,34 @@ class Filter extends React.Component {
                                 )}
                             </Form.Item>
                         </Col>*/}
-                        <Col span={4}>
-                            <Form.Item>
-                                <Button type="primary" htmlType="submit" onClick={this.handleSearch}>查询</Button>
-                                <Button style={{ marginLeft: 8 }} onClick={this.handleReset}>重置</Button>
-                            </Form.Item>
-                        </Col>
                     </Row>
+                    <Row>
+                      <Col span={8}>
+                         <Form.Item label='标签搜索'>
+                            {getFieldDecorator('tag', {
+
+                            })(
+                                <Select
+                                    mode="multiple"
+                                    showSearch
+                                    style={{ width: 420 }}
+                                    placeholder="请选择标签"
+
+                                >
+                                    { searchTags && searchTags.length > 0 ? searchTags.map(item => {
+                                        return <Option key={item.tagid} value={item.tagname}>{item.tagname}</Option>
+                                    }) : null}
+                                </Select>,
+                            )}
+                        </Form.Item>
+                    </Col>
+                    <Col span={4}>
+                        <Form.Item>
+                            <Button type="primary" htmlType="submit" onClick={this.handleSearch}>查询</Button>
+                            <Button style={{ marginLeft: 8 }} onClick={this.handleReset}>重置</Button>
+                        </Form.Item>
+                    </Col>
+                  </Row>
                 </Form>
             </div>
         )

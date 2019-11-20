@@ -95,6 +95,25 @@ const { ComSider, ComHeader, Breadcrumbs, MessageBox } = MyLayout
         )
       )
     },
+    //待回访数量
+    getReturnCount(payload){
+      dispatch(
+        _mmAction(
+          `${namespace}/EFFECTS_RETURNCOUNT`,
+          payload
+        )
+      )
+    },
+    //清空回访数量
+    clearReturnCount(payload){
+      dispatch(
+        _mmAction(
+          `${namespace}/EFFECTS_CLEAR_RETURNCOUNT`,
+          payload
+        )
+      )
+    }
+
 
   })
 )

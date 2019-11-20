@@ -32,10 +32,12 @@ const formItemLayout = {
 }
 
 const namespace = 'handleworktask'
+const parentNamespace = 'worktaskmanagement'
 const RadioGroup = Radio.Group
+
 let userLabes = []
 let userid = ''
-
+let tagsName = []
 
 @connect(({layout,worktaskmanagement,handleworktask}) => ({
   ...layout,
@@ -148,6 +150,14 @@ let userid = ''
       )
     )
   },
+  SetDefaultLabels(payload) {
+    dispatch(
+      _mmAction(
+        `${parentNamespace}/EFFECTS_SET_DEFAULTLABELS`,
+        payload
+      )
+    )
+  }
 
 }))
 
@@ -245,12 +255,26 @@ class Handleworktask extends React.Component {
   handleLabels = (record) => {
     userLabes = []
     const { lablenames } = record
-    // userLabes = userLabes.concat(lablenames.split(','))
+    const { customerTagsList } = this.props
 
     if (lablenames != null) {
+      this.props.SetDefaultLabels(lablenames.split(','))
       this.setState({
         userTags: lablenames.split(',')
       });
+      let aaa = lablenames.split(',')
+
+      customerTagsList.forEach( (op, key) => {
+        op.child.forEach((c) => {
+          aaa.forEach( (e, index) => {
+            if (c.tagname == e) {
+              userLabes[key] = e
+            }
+          })
+        })
+      })
+      // console.log(userLabes)
+      // userLabes = userLabes.concat(aaa)
     }
 
     userid = record.userid
@@ -260,20 +284,36 @@ class Handleworktask extends React.Component {
   }
 
   handleOk = e => {
-    const { userTags } = this.state
-    console.log(userTags)
-    console.log(userLabes)
-    return false
     this.setState({
       visible: false,
     });
-    if (userLabes.length > 0) {
+    const { userTags } = this.state
+    let aa = []
+    let bb = []
+    userLabes.forEach( (index) => {
+      if (typeof(index) == 'object') {
+        aa.push(index)
+        aa = aa.flat()
+      }
+      if (typeof(index) == 'string') {
+        bb.push(index)
+      }
+       tagsName = aa.concat(bb)
+    })
+    // console.log(tagsName)
+    if (tagsName.length > 0) {
       this.props.onChangeLabels({
-        labels: userLabes.join(','),
+        labels: tagsName.join(','),
+        userid: userid
+      })
+    } else {
+      this.props.onChangeLabels({
+        labels: '',
         userid: userid
       })
     }
     userLabes = []
+    tagsName = []
   };
 
   handleCancel = e => {
@@ -283,12 +323,8 @@ class Handleworktask extends React.Component {
   };
 
    onChangeLaels = (e, index) => {
-     console.log(e)
-     userLabes[index+'_ind'] = e
-     console.log(userLabes)
-     return false
-     userLabes = userLabes.concat(e)
-     userLabes = Array.from(new Set(userLabes))
+     userLabes[index] = e
+     // console.log(userLabes);
    }
 
   render() {

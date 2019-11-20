@@ -14,7 +14,11 @@ const confirm = Modal.confirm;
 class List extends React.Component {
 
     state = {
-      pagination: {},
+      pagination: {
+        showSizeChanger: true,
+        onShowSizeChange: (current,pageSize) => this.onShowSizeChange(current,pageSize),
+        pageSizeOptions: ['10', '20', '50', '100']
+      },
       visible_audio: false
     }
 
@@ -28,8 +32,16 @@ class List extends React.Component {
       const { searchValue } =  this.props
       console.log(searchValue);
       this.props.onSetCurrentPage(pagination.current)
-      this.props.onGetAudioList({page: pagination.current, limit:10,...searchValue})
+      this.props.onGetAudioList({page: pagination.current, limit:pagination.pageSize,...searchValue})
     }
+
+    //改变每页条数
+    onShowSizeChange = (current, pageSize) => {
+      const { searchValue } =  this.props
+      this.props.onSetCurrentSize(pageSize)
+      this.props.onGetAudioList({page: 1, limit:pageSize, ...searchValue })
+    }
+
 
     // 录音播放
     handlePlayAudio = (payload) => {

@@ -4,7 +4,7 @@ import {
 } from 'antd';
 import PropTypes from 'prop-types'
 import styles from './index.less'
-import {_mmStampToTime} from 'utils/mm' 
+import {_mmStampToTime} from 'utils/mm'
 
 
 class Oper extends React.Component {
@@ -23,7 +23,7 @@ class Oper extends React.Component {
             if( data[key] ) {
                 str = str + '&' + key + '=' + data[key]
             }
-            
+
         }
         return '?'+str
     }
@@ -35,7 +35,7 @@ class Oper extends React.Component {
                 <Button type="primary" icon="plus" onClick={this.onShowModal.bind(this,'新增工单','add')}>新增工单</Button>
                 {/* <Dropdown overlay={
                 <Menu>
-                    <Menu.Item key="3" onClick={this.onShowModal.bind(this,'批量分配','batch')}>暂无功能</Menu.Item>
+                    <Menu.Item key="2" onClick={this.onShowModal.bind(this,'发送短信','sendMessage')}>发送短信</Menu.Item>
                 </Menu>
                 }  disabled={!hasSelected}>
                 <Button type="primary">

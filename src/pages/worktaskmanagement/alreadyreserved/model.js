@@ -15,7 +15,8 @@ export default {
     total: null,       // 工单总条数
     currentPage: 1,    // 当前页码
     searchValue: {},    // 搜索条件
-    jobordersourcechild: []
+    jobordersourcechild: [],
+    currentSize: 10,  //每页大小
   },
 
   effects: {
@@ -24,7 +25,8 @@ export default {
       yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
       const searchValue = !payload.initEntry ? yield select(({alreadyreserved}) => alreadyreserved.searchValue) :{}
       const currentPage = yield select(({alreadyreserved}) => alreadyreserved.currentPage)
-      payload['page'] = payload.page ? payload.page : currentPage
+      const {page} = payload
+      currentPage ? payload.page = currentPage : payload.page
       const status = 2
       const data = _mmTimeToStamp({...searchValue,...payload, status},['start','end'],'YYYY/MM/DD')
       const { result, obj , total, msg  } = yield call(alreadyreservedApi.getOrderList, data)
@@ -32,7 +34,7 @@ export default {
         yield put(_mmAction('GET_ORDERLIST',{
           orderlist: _mmStampToTime(obj,['returndate','reservedate'],'YYYY/MM/DD'),
           total,
-          currentPage:  payload.page ?  payload.page : currentPage,
+          currentPage: currentPage ? currentPage : page,
           loading: false,
           currentOrder:{},
           searchValue
@@ -70,13 +72,14 @@ export default {
     // 添加/编辑工单
     * EFFECTS_SAVE_ORDER({payload}, { call, put , select}) {
       const currentPage = yield select(({alreadyreserved}) => alreadyreserved.currentPage)
+      const currentSize = yield select(({alreadyreserved}) => alreadyreserved.currentSize)
       yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
       const data =  _mmAddressSplit(_mmTimeToStamp(payload,['sourcedate']),['province','city'])
       const { result, obj, msg } = yield call(alreadyreservedApi.saveOrder, data);
       if (result === 1 ) {
         yield put(_mmAction('EFFECTS_GET_ORDERLIST',{
           page:currentPage,
-          limit: 10
+          limit: currentSize
         }))
         yield put(_mmAction('IS_SHOWMODAL',{visible: false, title: ''}))
         message.success('操作成功!')
@@ -145,16 +148,63 @@ export default {
         }
       })
     },
+    //设置当前每一页大小
+    * EFFECTS_SET_CURRENTSIZE({payload}, { call, put , select}){
+      yield put({
+        type: 'SET_CURRENTSIZE',
+        payload: {
+          currentSize: payload
+        }
+      })
+    },
     //修改列表客户标签
     * EFFECTS_ONCHANGELABELS({payload}, { call, put , select}){
       const currentPage = yield select(({alreadyreserved}) => alreadyreserved.currentPage)
+      const currentSize = yield select(({alreadyreserved}) => alreadyreserved.currentSize)
       yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
       const { result, obj, msg } = yield call(alreadyreservedApi.changeLabels, payload);
       if (result === 1 ) {
         message.success('编辑标签成功!')
+        yield put(_mmAction('EFFECTS_GET_ORDERLIST',{ page:currentPage, limit: currentSize }))
+      } else {
+        message.error(msg)
+        yield put(_mmAction('IS_SHOWLOADING',{loading: false}))
+      }
+    },
 
-        yield put(_mmAction('EFFECTS_GET_ORDERLIST',{ page:currentPage, limit: 10 }))
+    // 批量分配
+    * EFFECTS_BATCH_ORDER({payload}, { call, put , select}){
+      yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
+      const currentPage = yield select(({alreadyreserved}) => alreadyreserved.currentPage)
+      const currentSize = yield select(({alreadyreserved}) => alreadyreserved.currentSize)
+      const { result, obj, msg } = yield call(alreadyreservedApi.getBatchOrder, payload);
+      if (result === 1 ) {
+        yield put(_mmAction('EFFECTS_GET_ORDERLIST',{
+          page:currentPage,
+          limit: currentSize,
+        }))
+        yield put(_mmAction('IS_SHOWMODAL',{visible: false, title: ''}))
+        message.success('分配成功!')
+      } else {
+        message.error(msg)
+        yield put(_mmAction('IS_SHOWLOADING',{loading: false}))
+      }
+    },
 
+    //批量关闭工单
+    * EFFECTS_CLOSE_ORDER ({payload}, { call, put , select}){
+      let ordernos = payload.ordernos ? payload.ordernos.join(',') : ''
+      const currentPage = yield select(({alreadyreserved}) => alreadyreserved.currentPage)
+      const currentSize = yield select(({alreadyreserved}) => alreadyreserved.currentSize)
+      yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
+      const { result, obj, msg } = yield call(alreadyreservedApi.closeOrder, {...payload,ordernos});
+      if (result === 1 ) {
+        yield put(_mmAction('EFFECTS_GET_ORDERLIST',{
+          page:currentPage,
+          limit: currentSize,
+        }))
+        yield put(_mmAction('IS_SHOWMODAL',{visible: false, title: ''}))
+        message.success('操作成功!')
       } else {
         message.error(msg)
         yield put(_mmAction('IS_SHOWLOADING',{loading: false}))
@@ -186,6 +236,9 @@ export default {
       return { ...state, ...payload }
     },
     GET_SOURCECHILD(state, { payload }) {
+      return { ...state, ...payload }
+    },
+    SET_CURRENTSIZE(state, { payload }) {
       return { ...state, ...payload }
     },
   },

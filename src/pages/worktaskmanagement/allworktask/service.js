@@ -19,6 +19,8 @@ export const getOrderList = (data) => {
       "allottimeStart": data.allottimeStart,
       "allottimeEnd": data.allottimeEnd,
       "adminid": data.adminid,
+      "level": data.level,
+       "tag": data.tag,
       // "sourceid": data.sourceid
     }
   })
@@ -100,7 +102,6 @@ export const judgeUserIsExist= (data) => {
 }
 
 export const changeLabels= (data) => {
-  console.log(data)
   return request({
     url: '/workorder/lable/edit',
     method: 'POST',
@@ -122,7 +123,6 @@ export const activationDetail = (data) => {
 }
 
 export const chargeSave = (data) => {
-  console.log(data)
   return request({
     url: '/workorder/pay/save',
     method: 'POST',
@@ -133,6 +133,48 @@ export const chargeSave = (data) => {
       "debtamt": data.debtamt,
       "payTime": data.payTime,
       "remark": data.remark
+    }
+  })
+}
+
+export const closeOrder = (data)=> {
+  return request({
+    url: '/workorder/close',
+    method: 'POST',
+    data:{
+      "orderno": data.ordernos,
+    }
+  })
+}
+
+//批量共享客户
+export const sharingOrder = (data)=> {
+  return request({
+    url: '/workorder/offer',
+    method: 'POST',
+    data:{
+      "ordernos": data.ordernos,
+      "adminids": data.adminids,
+      "adminNames": data.adminNames
+    }
+  })
+}
+
+//批量发送短信
+export const sendMessage = (data)=> {
+  console.log(data);
+  return request({
+    url: '/sendMessage/sendMessage ',
+    method: 'POST',
+    data:{
+      "templateId": data.templateId,
+      "phone": data.phone.join(','),
+      "content": data.messageContent,
+      "one": data.one,
+      "two": data.two,
+      "three": data.three,
+      "four": data.four,
+      "five": data.five
     }
   })
 }

@@ -23,18 +23,20 @@ class Filter extends React.Component {
 
     // 收集表单
     handleSearch = () => {
+        const { currentSize } = this.props
         const { validateFields } = this.props.form
         validateFields((err, values) => {
             if (!err) {
                 this.props.onGetSearchValue(values)
-                this.props.onGetOrderList({ ...values, page: 1, limit: 10 })
+                this.props.onGetOrderList({ ...values, page: 1, limit: currentSize })
             }
         })
     }
 
     handleReset = () => {
+        const { currentSize } = this.props
         this.props.onResetSearchValue()
-        this.props.onGetOrderList({ page: 1, limit: 10 })
+        this.props.onGetOrderList({ page: 1, limit: currentSize })
         this.props.form.resetFields()
     }
 
@@ -44,14 +46,14 @@ class Filter extends React.Component {
           tagid: values,
         })
       }
-        const { form, onFilterChange } = this.props
+        const { form, onFilterChange, currentSize } = this.props
         const { getFieldsValue } = form
 
         let fields = getFieldsValue()
         fields[key] = values
         // 查询数据
         this.props.onGetSearchValue(fields)
-        this.props.onGetOrderList({ ...fields, page: 1, limit: 10 })
+        this.props.onGetOrderList({ ...fields, page: 1, limit: currentSize })
     }
 
     render() {
@@ -64,20 +66,20 @@ class Filter extends React.Component {
                 >
                     <Row>
                         <Col span={4}>
-                            <Form.Item label='客户姓名'>
+                            <Form.Item label='姓名'>
                                 {getFieldDecorator('name', {
                                     initialValue: searchValue && searchValue.name ? searchValue.name : ''
                                 })(
-                                    <Input placeholder="请输入客户姓名" />
+                                    <Input placeholder="请输入姓名" />
                                 )}
                             </Form.Item>
                         </Col>
                         <Col span={4}>
-                            <Form.Item label='客户电话'>
+                            <Form.Item label='电话'>
                                 {getFieldDecorator('phone', {
                                     initialValue: searchValue && searchValue.phone ? searchValue.phone : ''
                                 })(
-                                    <Input placeholder="请输入客户电话" />
+                                    <Input placeholder="请输入电话" />
                                 )}
                             </Form.Item>
                         </Col>

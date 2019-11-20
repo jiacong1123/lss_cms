@@ -67,7 +67,8 @@ export const turnfollowupOrder = (data)=> {
     method: 'POST',
     data:{
       "orderno": data.orderno,
-      "content": data.content
+      "content": data.content,
+      "status": data.status
     }
   })
 }

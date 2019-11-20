@@ -26,14 +26,15 @@ export default {
       yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
       const searchValue = !payload.initEntry ? yield select(({alreadydisclue}) => alreadydisclue.searchValue) : {}
       const currentPage = yield select(({alreadydisclue}) => alreadydisclue.currentPage)
-      const { page } = payload
+      const {page} = payload
+      currentPage ? payload.page = currentPage : payload.page
       const type = 2
       const { result, obj , total, msg  } = yield call(alreadydisclueApi.apiClueList, { ...payload , type});
       if (result === 1 ) {
         yield put(_mmAction('UPDATE_STATE',{
           orderlist: _mmStampToTime(obj,['reservedate','visitingtime'],'YYYY/MM/DD'),
           total,
-          currentPage: page ? page : currentPage,
+          currentPage: currentPage ? currentPage : page,
           loading: false,
           currentOrder:{},
           searchValue

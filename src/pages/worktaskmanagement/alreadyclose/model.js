@@ -14,7 +14,8 @@ export default {
     modalKey: '',      // 当前操作的标识
     total: null,       // 工单总条数
     currentPage: 1,    // 当前页码
-    searchValue: {}    // 搜索条件
+    searchValue: {},   // 搜索条件
+    currentSize: 10,
   },
 
   effects: {
@@ -23,18 +24,22 @@ export default {
       yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
       const searchValue = !payload.initEntry ? yield select(({alreadyclose}) => alreadyclose.searchValue) : {}
       const currentPage = yield select(({alreadyclose}) => alreadyclose.currentPage)
-      const { page } = payload
+
+      const {page} = payload
+      currentPage ? payload.page = currentPage : payload.page
+
       const status = 5
       const { result, obj , total, msg  } = yield call(alreadycloseApi.getOrderList, {...searchValue,...payload, status})
       if (result === 1) {
         yield put(_mmAction('GET_ORDERLIST',{
           orderlist: _mmStampToTime(obj,['returndate'],'YYYY/MM/DD'),
           total,
-          currentPage: page ? page : currentPage,
+          currentPage: currentPage ? currentPage : page,
           loading: false,
           currentOrder:{},
           searchValue
         }))
+        yield put(_mmAction('IS_SHOWLOADING',{loading: false}))
       } else {
         message.error(msg)
         yield put(_mmAction('IS_SHOWLOADING',{loading: false}))
@@ -63,13 +68,15 @@ export default {
 
     // 激活工单
     * EFFECTS_ACTIVE_ORDER({payload}, { call, put , select}){
+      let ordernos = payload.ordernos ? payload.ordernos.join(',') : ''
       const currentPage = yield select(({alreadyclose}) => alreadyclose.currentPage)
+      const currentSize = yield select(({alreadyclose}) => alreadyclose.currentSize)
       yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
-      const { result, obj, msg } = yield call(alreadycloseApi.activationDetail, payload);
+      const { result, obj, msg } = yield call(alreadycloseApi.activationDetail, {...payload,ordernos});
       if (result === 1 ) {
         yield put(_mmAction('EFFECTS_GET_ORDERLIST',{
           page:currentPage,
-          limit: 10
+          limit: currentSize
         }))
         yield put(_mmAction('IS_SHOWMODAL',{visible: false, title: ''}))
         message.success('操作成功!')
@@ -82,12 +89,13 @@ export default {
     //删除工单
     * EFFECTS_DELETE_ORDER({payload}, { call, put , select}){
       const currentPage = yield select(({alreadyclose}) => alreadyclose.currentPage)
+      const currentSize = yield select(({alreadyclose}) => alreadyclose.currentSize)
       yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
       const { result, obj, msg } = yield call(alreadycloseApi.deleteOrder, payload);
       if (result === 1 ) {
         yield put(_mmAction('EFFECTS_GET_ORDERLIST',{
           page:currentPage,
-          limit: 10
+          limit: currentSize
         }))
         message.success('操作成功!')
       } else {
@@ -125,6 +133,35 @@ export default {
         }
       })
     },
+    // 批量分配
+    * EFFECTS_BATCH_ORDER({payload}, { call, put , select}){
+      yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
+      const currentPage = yield select(({alreadyclose}) => alreadyclose.currentPage)
+      const currentSize = yield select(({alreadyclose}) => alreadyclose.currentSize)
+      const { result, obj, msg } = yield call(alreadycloseApi.getBatchOrder, payload);
+      if (result === 1 ) {
+        yield put(_mmAction('EFFECTS_GET_ORDERLIST',{
+          page:currentPage,
+          limit: currentSize
+        }))
+        yield put(_mmAction('IS_SHOWMODAL',{visible: false, title: ''}))
+        message.success('分配成功!')
+      } else {
+        message.error(msg)
+        yield put(_mmAction('IS_SHOWLOADING',{loading: false}))
+      }
+    },
+    //设置当前每一页大小
+    * EFFECTS_SET_CURRENTSIZE({payload}, { call, put , select}){
+      console.log(payload);
+      yield put({
+        type: 'SET_CURRENTSIZE',
+        payload: {
+          currentSize: payload
+        }
+      })
+    },
+
   },
 
   reducers: {
@@ -145,7 +182,10 @@ export default {
     },
     IS_SHOWMODAL(state, { payload }) {
       return { ...state, ...payload }
-    }
+    },
+    SET_CURRENTSIZE(state, { payload }) {
+      return { ...state, ...payload }
+    },
   },
 
   subscriptions: {
@@ -158,9 +198,12 @@ export default {
             payload: {
               page:1,
               limit: 10,
-              status: 0,
+              status: 5,
               initEntry: false
             }
+          })
+          dispatch({
+              type: 'EFFECTS_GET_SEARCHtAGS'
           })
         }
       })

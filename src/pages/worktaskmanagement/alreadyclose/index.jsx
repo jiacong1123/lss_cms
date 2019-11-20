@@ -76,7 +76,24 @@ const namespace = 'alreadyclose'
         payload
       )
     )
-  }
+  },
+  onGetBatchOrder(payload){
+    dispatch(
+      _mmAction(
+        `${namespace}/EFFECTS_BATCH_ORDER`,
+        payload
+      )
+    )
+  },
+  onSetCurrentSize(payload){
+    dispatch(
+      _mmAction(
+        `${namespace}/EFFECTS_SET_CURRENTSIZE`,
+        payload
+      )
+    )
+  },
+
 }))
 
 class Alreadyclose extends React.Component {
@@ -106,13 +123,17 @@ class Alreadyclose extends React.Component {
       // 编辑门诊
       this.props.onSaveOrder({...values,orderno,userid: currentOrder['userid']})
     } else if (modalKey === 'batch') {
-      // 批量分配
+      // 批量
       this.props.onGetBatchOrder({...values,ordernos})
       this.setState({ selectedRowKeys:[], ordernos:[]})
 
     } else if (modalKey === 'single') {
       // 单个分配
       this.props.onGetBatchOrder({...values,ordernos:[orderno]})
+    } else if (modalKey === 'receive') {
+      // 批量领取
+      this.props.onActiveOrder({...values,ordernos})
+      this.setState({ selectedRowKeys:[], ordernos:[]})
     }
   }
   render() {

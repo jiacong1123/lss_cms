@@ -10,6 +10,7 @@ class ComModal extends React.Component {
 
     // 收集表单
     onOk = () => {
+
        const { modalKey } = this.props
        if ( modalKey === 'add' || modalKey === 'edit' || modalKey === 'batch' || modalKey === 'single'){
             this.props.form.validateFields((err, values) => {
@@ -19,12 +20,12 @@ class ComModal extends React.Component {
             })
        }
     }
-    
+
     // 关闭模态框，清空表单
     onCancel = () => {
         this.props.onIsShowModal({visible:false,title:'',currentOrder:{}, userid: ''})
     }
-    
+
     // 渲染modal的内容
     renderModalChildren = () => {
         const {  modalKey } = this.props
@@ -34,7 +35,7 @@ class ComModal extends React.Component {
             return <ComBatch {...this.props}/>
         }
     }
-    
+
 
     render() {
         const {  title, visible } = this.props

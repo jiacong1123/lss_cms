@@ -45,6 +45,14 @@ const namespace = 'callrecord'
       )
     )
   },
+  onSetCurrentSize(payload){
+    dispatch(
+      _mmAction(
+        `${namespace}/EFFECTS_SET_CURRENTSIZE`,
+        payload
+      )
+    )
+  },
   onGetSearchValue(payload){
     console.log(payload)
     dispatch(
@@ -71,13 +79,15 @@ class Callrecord extends React.Component {
   }
 
   handleTabChange = (e) => {
+    const userinfo = store.get('userinfo')
+    const { name } = userinfo
+
     if (e == 1){ //通话记录
 
     } else if(e == 2) {   //短信管理
-      this.props.onGetSMSList({ page: 1, limit: 10})
+      this.props.onGetSMSList({ page: 1, limit: 10, name})
 
     } else {    //微信聊天记录
-      const userinfo = store.get('userinfo')
       const merchantNo = userinfo.guidMember.memberNoMerchant
       this.props.onGetWeChatList({ page: 0, limit: 10, merchantNo})
     }

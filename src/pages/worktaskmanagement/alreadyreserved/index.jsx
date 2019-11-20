@@ -87,6 +87,14 @@ const namespace = 'alreadyreserved'
       )
     )
   },
+  onSetCurrentSize(payload){
+    dispatch(
+      _mmAction(
+        `${namespace}/EFFECTS_SET_CURRENTSIZE`,
+        payload
+      )
+    )
+  },
   onGetSearchValue(payload){
     dispatch(
       _mmAction(
@@ -115,6 +123,22 @@ const namespace = 'alreadyreserved'
     dispatch(
       _mmAction(
         `${namespace}/EFFECTS_ONCHANGELABELS`,
+        payload
+      )
+    )
+  },
+  onGetBatchOrder(payload){
+    dispatch(
+      _mmAction(
+        `${namespace}/EFFECTS_BATCH_ORDER`,
+        payload
+      )
+    )
+  },
+  onCloseOrder(payload) {
+    dispatch(
+      _mmAction(
+        `${namespace}/EFFECTS_CLOSE_ORDER`,
         payload
       )
     )
@@ -170,6 +194,10 @@ class Alreadyreserved extends React.Component {
     } else if (modalKey === 'single') {
       // 单个分配
       this.props.onGetBatchOrder({...values,ordernos:[orderno]})
+    } else if (modalKey === 'close') {
+      //批量关闭
+      this.props.onCloseOrder({...values,ordernos})
+      this.setState({ selectedRowKeys:[], ordernos:[]})
     }
   }
   render() {
@@ -183,6 +211,12 @@ class Alreadyreserved extends React.Component {
       <div className={styles.alreadyreservedPage}>
          <Filter {...this.props}/>
          <div className={styles.tableListBox}>
+         <Oper
+             cleanSelectedKeys={this.cleanSelectedKeys}
+             selectedRowKeys={selectedRowKeys}
+             hasSelected={hasSelected}
+             {...this.props}
+           />
           <List
               rowSelection={rowSelection}
               {...this.props}

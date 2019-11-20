@@ -48,20 +48,20 @@ class Filter extends React.Component {
                 >
                     <Row>
                         <Col span={4}>
-                            <Form.Item label='客户姓名'>
+                            <Form.Item label='姓名'>
                                 {getFieldDecorator('name', {
                                     initialValue: searchValue && searchValue.name ? searchValue.name : ''
                                 })(
-                                    <Input placeholder="请输入客户姓名" />
+                                    <Input placeholder="请输入姓名" />
                                 )}
                             </Form.Item>
                         </Col>
                         <Col span={4}>
-                            <Form.Item label='客户电话'>
+                            <Form.Item label='电话'>
                                 {getFieldDecorator('phone', {
                                     initialValue: searchValue && searchValue.phone ? searchValue.phone : ''
                                 })(
-                                    <Input placeholder="请输入客户电话" />
+                                    <Input placeholder="请输入电话" />
                                 )}
                             </Form.Item>
                         </Col>

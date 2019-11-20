@@ -4,7 +4,7 @@ import {
 } from 'antd';
 import PropTypes from 'prop-types'
 import styles from './index.less'
-import {_mmStampToTime} from 'utils/mm' 
+import {_mmStampToTime} from 'utils/mm'
 
 
 class Oper extends React.Component {
@@ -23,16 +23,17 @@ class Oper extends React.Component {
             if( data[key] ) {
                 str = str + '&' + key + '=' + data[key]
             }
-            
+
         }
         return '?'+str
     }
 
     render(){
-        const { hasSelected, selectedRowKeys, cleanSelectedKeys } = this.props
+        const { hasSelected, selectedRowKeys, cleanSelectedKeys, total } = this.props
         return (
             <div className={styles.oper}>
                 <Button type="primary" icon="plus" onClick={this.onShowModal.bind(this,'新增工单','add')}>新增工单</Button>
+                <span className={styles.right}>总计<span className={styles.red}>{total}</span>人</span>
                 <Dropdown overlay={
                 <Menu>
                     <Menu.Item key="3" onClick={this.onShowModal.bind(this,'批量分配','batch')}>批量分配</Menu.Item>

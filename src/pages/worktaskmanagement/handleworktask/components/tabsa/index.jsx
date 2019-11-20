@@ -44,7 +44,7 @@ class Tabsa extends React.Component {
     const { clinicdropmenu, times, orderdetail } =this.props
     const { getFieldDecorator } = this.props.form
     const { tabKey } = this.state
-    const { key } =  this.props.history.location.query
+    const { key, type } =  this.props.history.location.query
     return (
         <Tabs defaultActiveKey={tabKey} onChange={this.callback} animated={false} style={{backgroundColor: '#ffffff'}}>
 
@@ -180,6 +180,7 @@ class Tabsa extends React.Component {
                   </Col>
               </Row> : null }
         </TabPane>
+        { type !== "sharingCustomer" ?
             <TabPane tab="关闭" key="3">
                 { tabKey == '3' ? <div>
                   <Col span={24}>
@@ -202,6 +203,7 @@ class Tabsa extends React.Component {
                   </div>
                 </div> : null}
             </TabPane>
+        : ''}
           </Tabs>
     )
   }

@@ -52,7 +52,7 @@ class Filter extends React.Component {
                                 {getFieldDecorator('name', {
                                     initialValue: searchValue && searchValue.adminName ? searchValue.adminName : ''
                                 })(
-                                    <Input placeholder="请输入客户姓名" />
+                                    <Input placeholder="请输入姓名" />
                                 )}
                             </Form.Item>
                         </Col>
@@ -61,7 +61,7 @@ class Filter extends React.Component {
                                 {getFieldDecorator('phone', {
                                     initialValue: searchValue && searchValue.empNo ? searchValue.empNo : ''
                                 })(
-                                    <Input placeholder="请输入客户电话" />
+                                    <Input placeholder="请输入电话" />
                                 )}
                             </Form.Item>
                         </Col>

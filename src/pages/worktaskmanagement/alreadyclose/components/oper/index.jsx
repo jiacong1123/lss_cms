@@ -32,17 +32,18 @@ class Oper extends React.Component {
         const { hasSelected, selectedRowKeys, cleanSelectedKeys, total } = this.props
         return (
             <div className={styles.oper}>
-                <Button type="primary" icon="plus" onClick={this.onShowModal.bind(this,'新增工单','add')}>新增工单</Button>
-                <span className={styles.right}>总计<span className={styles.red}>{total}</span>人</span>
-                {/* <Dropdown overlay={
-                <Menu>
-                    <Menu.Item key="3" onClick={this.onShowModal.bind(this,'批量分配','batch')}>批量分配</Menu.Item>
-                </Menu>
+                {/*<Button type="primary" icon="plus" onClick={this.onShowModal.bind(this,'新增工单','add')}>新增工单</Button>*/}
+                <span className={styles.right}>总计<span className={styles.red}>{total}</span>人</span> 
+                 <Dropdown overlay={
+                      <Menu>
+                          <Menu.Item key="3" onClick={this.onShowModal.bind(this,'批量领取','receive')}>批量领取</Menu.Item>
+                          <Menu.Item key="2" onClick={this.onShowModal.bind(this,'批量分配','batch')}>批量分配</Menu.Item>
+                      </Menu>
                 }  disabled={!hasSelected}>
                 <Button type="primary">
                     批量处理<Icon type="down" />
                 </Button>
-                </Dropdown> */}
+                </Dropdown>
                 <br /> <br />
                 <div>
                 <Alert message={

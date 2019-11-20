@@ -27,7 +27,11 @@ const formItemLayout = {
 class PayForm extends React.Component {
 
       state = {
-        pagination: {},
+        pagination: {
+          showSizeChanger: true,
+          onShowSizeChange: (current,pageSize) => this.onShowSizeChange(current,pageSize),
+          pageSizeOptions: ['10', '20', '50', '100']
+        },
         visible: false
       }
       // 点击操作按钮
@@ -87,7 +91,14 @@ class PayForm extends React.Component {
     handleTableChange = (pagination, filters, sorter) => {
       const { searchValue } =  this.props
       this.props.onSetCurrentPage(pagination.current)
-      this.props.onGetOrderList({page: pagination.current, limit:10,...searchValue})
+      this.props.onGetOrderList({page: pagination.current, limit:pagination.pageSize,...searchValue})
+    }
+
+    //改变每页条数
+    onShowSizeChange = (current, pageSize) => {
+      const { searchValue } =  this.props
+      this.props.onSetCurrentSize(pageSize)
+      this.props.onGetOrderList({page: 1, limit:pageSize, ...searchValue })
     }
 
     render(){
@@ -223,6 +234,7 @@ class PayForm extends React.Component {
         <div>
             <ConfigProvider>
                 <Table
+                  rowSelection={rowSelection}
                    columns={columns}
                    dataSource={orderlist}
                    bordered

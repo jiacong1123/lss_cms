@@ -3,6 +3,8 @@ import { connect } from 'dva'
 import { _mmAction, _mmTimeToStamp, _mmAddressSplit} from 'utils/mm'
 import Filter from './components/filter'
 import List from './components/list'
+import Oper from './components/oper'
+
 import styles from './index.less'
 
 const namespace = 'missedcalls'
@@ -27,6 +29,14 @@ const parentNamespace = 'worktaskmanagement'
     dispatch(
       _mmAction(
         `${namespace}/EFFECTS_SET_CURRENTPAGE`,
+        payload
+      )
+    )
+  },
+  onSetCurrentSize(payload){
+    dispatch(
+      _mmAction(
+        `${namespace}/EFFECTS_SET_CURRENTSIZE`,
         payload
       )
     )
@@ -78,14 +88,32 @@ const parentNamespace = 'worktaskmanagement'
 
 class missedcalls extends React.Component {
   state = {
-
+    selectedRowKeys: [], // Check here to configure the default column
+    ordernos: []
+  }
+  onSelectChange = (selectedRowKeys,e) => {
+    const ordernos = e.map(item=>item['orderno'])
+    this.setState({ selectedRowKeys, ordernos});
   }
 
   render() {
+    const {  selectedRowKeys } = this.state;
+    const rowSelection = {
+      selectedRowKeys,
+      onChange: this.onSelectChange,
+    };
+    const hasSelected = selectedRowKeys.length > 0;
+
     return (
       <div className={styles.missedcallsPage}>
          <Filter {...this.props}/>
          <div className={styles.tableListBox}>
+         <Oper
+           cleanSelectedKeys={this.cleanSelectedKeys}
+           selectedRowKeys={selectedRowKeys}
+           hasSelected={hasSelected}
+           {...this.props}
+           />
           <List
 
               {...this.props}

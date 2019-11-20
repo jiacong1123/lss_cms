@@ -1,6 +1,6 @@
 import React from 'react'
 import {
-    ConfigProvider, Table ,Modal,Button,Icon
+    ConfigProvider, Table ,Modal,Button,Icon, Tooltip
 } from 'antd';
 import store from 'store'
 import { DropOption } from 'components'
@@ -15,7 +15,11 @@ const confirm = Modal.confirm;
 class List extends React.Component {
 
     state = {
-      pagination: {},
+      pagination: {
+        showSizeChanger: true,
+        onShowSizeChange: (current,pageSize) => this.onShowSizeChange(current,pageSize),
+        pageSizeOptions: ['10', '20', '50', '100']
+      },
       visible_audio: false
     }
 
@@ -31,15 +35,18 @@ class List extends React.Component {
       this.props.onGetWeChatList({ page: pagination.current, limit: pagination.pageSize,...searchValue})
     }
 
+    //改变每页条数
+    onShowSizeChange = (current, pageSize) => {
+      const { searchValue } =  this.props
+      this.props.onSetCurrentSize(pageSize)
+      this.props.onGetOrderList({page: 1, limit:pageSize, ...searchValue })
+    }
+
     render(){
       const columns = [
           {
             title: '员工姓名',
             dataIndex: 'adminName',
-          },
-          {
-            title: '员工号码',
-            dataIndex: 'empNo',
           },
           {
             title: '客户姓名',
@@ -53,53 +60,75 @@ class List extends React.Component {
           },
           {
             title: '客户手机号',
-            key: 'cusNo',
+            key: 'phone',
             render: (text, record) => {
-              const { cusNo } = record
+              const { phone } = record
               return (
-                <div className={mixin.lightHeight}>{cusNo}</div>
+                <div className={mixin.lightHeight}>{phone}</div>
               )
             }
           },
           {
             title: '发送时间',
-            dataIndex: 'transferTime',
-          },
-          {
-            title: '类型',
-            key: 'type',
+            key: 'sendDate',
             render: (text, record) => {
-              const { type } = record
+              const { sendDate } = record
               return (
-              <div className={styles.operBtnBox}>
-                { type === 'OUTBOUND' ? '外发短信' :''}
-                { type === 'OUTBOUND_UNKNOWN' ? '陌生外发短信' :''}
-                { type === 'INBOUND' ? '客户回复短信' :''}
-                { type === 'INBOUND_CHANNEL' ? '渠道短信' :''}
-                { type === 'INBOUND_UNKNOWN' ? '陌生短信' :''}
-              </div>
+                <div>{parseTime(sendDate)}</div>
               )
             }
           },
+          // {
+          //   title: '类型',
+          //   key: 'type',
+          //   render: (text, record) => {
+          //     const { type } = record
+          //     return (
+          //     <div className={styles.operBtnBox}>
+          //       { type === 'OUTBOUND' ? '外发短信' :''}
+          //       { type === 'OUTBOUND_UNKNOWN' ? '陌生外发短信' :''}
+          //       { type === 'INBOUND' ? '客户回复短信' :''}
+          //       { type === 'INBOUND_CHANNEL' ? '渠道短信' :''}
+          //       { type === 'INBOUND_UNKNOWN' ? '陌生短信' :''}
+          //     </div>
+          //     )
+          //   }
+          // },
           {
             title: '状态',
-            key: 'llResult',
+            key: 'status',
             render: (text, record) => {
-              const { llResult } = record
+              const { status } = record
               return (
               <div className={styles.operBtnBox}>
-                { llResult === 'SENT' ? '成功发送' :''}
-                { llResult === 'INVALID_SHOW_NUMBER' ? '显示号码不合法' :''}
-                { llResult === 'INVALID_RECEIVER_NUMBER' ? '接收号码非手机号' :''}
-                { llResult === 'OTHER' ? '其他失败' :''}
+                { status === 1 ? '成功' :''}
+                { status === 2 ? '失败' :''}
               </div>
               )
             }
           },
           {
             title: '内容',
-            dataIndex: 'content',
-            width: 300,
+            key: 'content',
+            onCell: () => {
+              return {
+                style: {
+                  maxWidth: 200,
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  textOverflow:'ellipsis',
+                  cursor:'pointer'
+                }
+              }
+            },
+            render: (text, record) => {
+              const { content } = record
+              return (
+                <Tooltip placement="top" title = {content}>
+                  {content}
+                </Tooltip>
+              )
+            }
           },
 
       ]

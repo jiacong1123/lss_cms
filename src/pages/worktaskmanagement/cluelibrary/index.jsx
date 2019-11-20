@@ -62,6 +62,14 @@ const namespace = 'cluelibrary'
       )
     )
   },
+  onSetCurrentSize(payload){
+    dispatch(
+      _mmAction(
+        `${namespace}/EFFECTS_SET_CURRENTSIZE`,
+        payload
+      )
+    )
+  },
   onGetSearchValue(payload){
     dispatch(
       _mmAction(
@@ -108,11 +116,11 @@ class Cluelibrary extends React.Component {
     const { modalKey } = this.props
 
     if ( modalKey === 'add') {
- 
+
     } else if (modalKey === 'editClue') {
       // 编辑工单
       this.props.onEditClue(values)
-    } 
+    }
   }
 
   render() {
@@ -127,13 +135,19 @@ class Cluelibrary extends React.Component {
       <div className={styles.cluelibraryPage}>
          <Filter {...this.props}/>
          <div className={styles.tableListBox}>
-          <List 
-              rowSelection={rowSelection} 
+         <Oper
+             cleanSelectedKeys={this.cleanSelectedKeys}
+             selectedRowKeys={selectedRowKeys}
+             hasSelected={hasSelected}
+             {...this.props}
+           />
+          <List
+              rowSelection={rowSelection}
               {...this.props}
           />
-          <ComModal 
-            {...this.props} 
-            onOk={this.onModalOk} 
+          <ComModal
+            {...this.props}
+            onOk={this.onModalOk}
           />
           </div>
       </div>

@@ -23,16 +23,16 @@ export const getCallRecordList = (data) => {
 //短信记录列表
 export const getSMSList = (data) => {
   return request({
-    url: '/phone/smsRecord/list',
+    // url: '/phone/smsRecord/list',
+    url: '/sendMessage/messageList',
     method: 'POST',
     data:{
-      // empNo: data.empNo,
-      page: data.page,
-      limit: data.limit,
-      // "adminName": '', //员工名称
+      "page": data.page,
+      "limit": data.limit,
+      "adminName": data.name, //员工名称
+      //"phone": '',
       // "userName": '', //客户名称
-      // "llResult": '', //状态
-      // "type": '',  //类型
+      "status": '', //状态
     }
   })
 }

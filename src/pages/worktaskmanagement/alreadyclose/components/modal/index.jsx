@@ -1,6 +1,8 @@
 import React from 'react'
 import { Modal, Form } from 'antd';
 import ComSave from '../save'
+import ComBatch from '../batch'
+import ComReceive from '../receive'
 import PropTypes from 'prop-types'
 import styles from './index.less'
 
@@ -10,7 +12,7 @@ class ComModal extends React.Component {
     // 收集表单
     onOk = () => {
        const { modalKey } = this.props
-       if ( modalKey === 'add' || modalKey === 'edit' || modalKey === 'batch' || modalKey === 'single'){
+       if ( modalKey === 'add' || modalKey === 'edit' || modalKey === 'batch' || modalKey === 'single' || modalKey=== 'receive'){
             this.props.form.validateFields((err, values) => {
                 if (!err) {
                     this.props.onOk(values)
@@ -18,20 +20,24 @@ class ComModal extends React.Component {
             })
        }
     }
-    
+
     // 关闭模态框，清空表单
     onCancel = () => {
         this.props.onIsShowModal({visible:false,title:'',currentOrder:{}})
     }
-    
+
     // 渲染modal的内容
     renderModalChildren = () => {
         const {  modalKey } = this.props
         if ( modalKey === 'add' || modalKey === 'edit' ) {
             return <ComSave {...this.props}/>
-        } 
+        } else if (modalKey === 'receive') {
+          return <ComReceive {...this.props}/>
+        } else if (modalKey === 'batch' || modalKey === 'single') {
+          return <ComBatch {...this.props}/>
+        }
     }
-    
+
 
     render() {
         const {  title, visible } = this.props
