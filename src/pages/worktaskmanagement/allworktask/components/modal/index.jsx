@@ -15,7 +15,7 @@ class ComModal extends React.Component {
     // 收集表单
 onOk = () => {
    const { modalKey, selectedList } = this.props
-   if (selectedList.length == 0) {
+   if (modalKey == 'sendMessage' && selectedList.length == 0) {
      message.error('收信人不能为空!')
      return false
    }
@@ -44,7 +44,7 @@ onOk = () => {
           return <ComClose {...this.props}/>
         } else if (modalKey === 'sharing') {
           return <Sharing {...this.props}/>
-        } else if (modalKey === 'sendMessage') {          
+        } else if (modalKey === 'sendMessage') {
           return <SendMessage {...this.props}/>
         }
     }
