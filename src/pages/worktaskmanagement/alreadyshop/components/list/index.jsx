@@ -1,6 +1,6 @@
 import React from 'react'
 import {
-    ConfigProvider, Table ,Modal,Avatar, Button , Icon, Radio,Tooltip, Checkbox
+    ConfigProvider, Table ,Modal,Avatar, Button , Icon, Radio,Tooltip, Checkbox, Menu, Dropdown, message
 } from 'antd';
 import store from 'store'
 import { DropOption } from 'components'
@@ -54,8 +54,18 @@ class List extends React.Component {
 
     // 拨打电话
     handleMakeCall = (record) => {
-      this.props.clearCurrentCallInfo()
-      this.props.onBindCallPhone(record)
+      if (name == 'carl') {
+        this.props.clearCurrentCallInfo()
+        this.props.onBindCallPhone(record)
+      } else {
+        let userinfo = store.get('userinfo')
+        const { ecUserId } = userinfo
+        if (!ecUserId) {
+            message.error('请先绑定EC账号!')
+            return false
+        }
+        this.props.carlCallPhone({...record, ecUserId})
+      }
     }
 
     // 处理分页
@@ -67,7 +77,7 @@ class List extends React.Component {
 
     //改变每页条数
     onShowSizeChange = (current, pageSize) => {
-      const { searchValue } =  this.props      
+      const { searchValue } =  this.props
       this.props.onSetCurrentSize(pageSize)
       this.props.onGetOrderList({page: 1, limit:pageSize, ...searchValue })
     }
@@ -233,7 +243,16 @@ class List extends React.Component {
               const { orderno,isclue } = record
               return (
               <div className={styles.operBtnBox}>
-                <Button size="small" type="primary" onClick={e => this.handleMakeCall(record)}><Icon type="phone" /></Button>
+                <Dropdown overlay={
+                <Menu>
+                    {/*<Menu.Item key="1" onClick={ e => this.handleMakeCall(record, 'carl') } >卡尔话机</Menu.Item>*/}
+                    <Menu.Item key="2" onClick={ e => this.handleMakeCall(record, 'EC') } >EC话机</Menu.Item>
+                </Menu>
+                }>
+                <Button type="primary" size="small">
+                    <Icon type="phone" />
+                </Button>
+                </Dropdown>              
               </div>
               )
             }

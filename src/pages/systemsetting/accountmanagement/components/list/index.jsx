@@ -1,6 +1,6 @@
 import React from 'react'
 import {
-    ConfigProvider, Table,Switch ,Modal,Button
+    ConfigProvider, Table,Switch ,Modal,Button,Icon, Menu, Dropdown
 } from 'antd';
 import { DropOption } from 'components'
 import styles from './index.less'
@@ -61,16 +61,27 @@ class List extends React.Component {
     }
 
     // 绑定话机及小号
-    onBindPhone = (record)=> {
-        const { adminid  } = record
-        // 获取当前账号信息
-        this.props.onGetCurrentAdmin({adminid})
+    onBindPhone = (record, name)=> {
+      const { adminid  } = record
+      // 获取当前账号信息
+      this.props.onGetCurrentAdmin({adminid})
+      if (name == 'carl') {
         // 弹出编辑账号modal
         this.props.onIsShowModal({
           visible:true,
-          title: '绑定话机号码',
+          title: '卡尔绑定话机号码',
           modalKey: 'bindphone'
        })
+      } else {
+        this.props.onBingECId(record)
+       //  this.props.onIsShowModal({
+       //    visible:true,
+       //    title: 'EC绑定话机号码',
+       //    modalKey: 'bindECId'
+       // })
+      }
+
+
     }
 
 
@@ -139,7 +150,16 @@ class List extends React.Component {
             width: 100,
             render: (text, record) => {
               const { callerNos } = record
-              return  <Button size="small" type="primary" onClick={e => this.onBindPhone(record)}>{ callerNos ? '修改': '绑定'}</Button>
+              return (
+                <Dropdown overlay={
+                <Menu>
+                    {/*<Menu.Item key="1" onClick={ e => this.onBindPhone(record, 'carl') } >绑定卡尔小号</Menu.Item>*/}
+                    <Menu.Item key="2" onClick={ e => this.onBindPhone(record, 'EC') } >绑定EC</Menu.Item>
+                </Menu>
+                }>
+                <Button type="primary" size="small">{ callerNos ? '修改': '绑定'}</Button>
+                </Dropdown>
+              )
             }
           },
           {

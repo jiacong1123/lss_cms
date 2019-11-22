@@ -8,18 +8,18 @@
 
 //开发接口域名
 //dev
-  window.baseURL = process.env.NODE_ENV === "development" ? 'http://192.168.50.23:8380/lss-admin' : 'http://rw.kehuzhitongche.com/lss-admin'
+  window.baseURL = process.env.NODE_ENV === "development" ? 'http://192.168.50.4/lss-admin' : 'http://rw.kehuzhitongche.com/lss-admin'
 
 // production
 // window.baseURL = process.env.NODE_ENV === "development" ? 'http://192.168.50.4/lss-admin' : 'http://adminapi.lesasa.wang'
 
 
 //build
- //window.baseURL = process.env.NODE_ENV === "development" ? 'http://rw.kehuzhitongche.com/lss-admin' : 'http://192.168.50.4/lss-admin'
+ // window.baseURL = process.env.NODE_ENV === "development" ? 'http://rw.kehuzhitongche.com/lss-admin' : 'http://192.168.50.4/lss-admin'
 
 
 // dev
- window.baseURL_hx = process.env.NODE_ENV === "development" ? 'http://192.168.50.23:8380' : 'http://192.168.50.4'
+ window.baseURL_hx = process.env.NODE_ENV === "development" ? 'http://192.168.50.4' : 'http://192.168.50.4'
 
 // production
 // window.baseURL_hx = process.env.NODE_ENV === "development" ? 'http://192.168.50.4' : 'http://121.201.65.181'

@@ -104,8 +104,12 @@ class Filter extends React.Component {
 
         let status;
         fields.status ? status = fields.status : status = '99'
-        fields.tag = fields.tag.join(',')
-        
+        if (fields.tag && fields.tag.length) {
+          fields.tag = fields.tag.join(',')
+        } else {
+          fields.tag = ''
+        }
+
         // console.log(fields)
         this.props.onGetSearchValue(fields)
         this.props.onGetOrderList({ ...fields, page: 1, limit: currentSize, status: status })
@@ -273,7 +277,7 @@ class Filter extends React.Component {
                                     showSearch
                                     style={{ width: 420 }}
                                     placeholder="请选择标签"
-
+                                    onChange={this.handleChange.bind(this, 'tag')}
                                 >
                                     { searchTags && searchTags.length > 0 ? searchTags.map(item => {
                                         return <Option key={item.tagid} value={item.tagname}>{item.tagname}</Option>

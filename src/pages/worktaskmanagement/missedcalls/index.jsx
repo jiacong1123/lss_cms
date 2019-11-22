@@ -57,6 +57,15 @@ const parentNamespace = 'worktaskmanagement'
       )
     )
   },
+  //EC拨打电话
+  carlCallPhone(payload) {
+    dispatch(
+      _mmAction(
+        `layout/EFFECTS_CARL_CALLPHONE`,
+        payload
+      )
+    )
+  },
   // 绑定外呼号码并拨号
   onBindCallPhone(payload) {
     dispatch(

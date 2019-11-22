@@ -100,7 +100,7 @@ export default {
         message.success('操作成功!')
       } else {
         message.error(obj1.msg)
-        yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
+        yield put(_mmAction('IS_SHOWLOADING',{loading: false}))
       }
     },
 
@@ -123,7 +123,7 @@ export default {
           message.success('操作成功!')
         } else {
           message.error(obj1.msg)
-          yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
+          yield put(_mmAction('IS_SHOWLOADING',{loading: false}))
         }
     },
 
@@ -159,6 +159,31 @@ export default {
         }
       })
     },
+
+    //EC绑定电话号码
+    * EFFECTS_EC_BINDID({payload}, { call, put , select}) {
+        yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
+        const adminid = yield select(({accountmanagement}) => accountmanagement.adminid)
+        const currentPage = yield select(({accountmanagement}) => accountmanagement.currentPage)
+        const obj1 = yield call(accountmanagementApi.bingECId, {adminid,...payload});
+        if (obj1.result === 1) {
+          yield put(
+            _mmAction(
+            'EFFECTS_GET_ADMINLIST',
+            {
+              page: currentPage,
+              limit: 10
+            })
+          )
+          yield put(_mmAction('IS_SHOWMODAL',{visible: false}))
+          yield put(_mmAction('IS_SHOWLOADING',{loading: false}))
+          message.success('操作成功!')
+        } else {
+          message.error(obj1.msg)
+          yield put(_mmAction('IS_SHOWLOADING',{loading: false}))
+        }
+    },
+
     //新增或编辑弹窗  选择的机构
     *EFFECTS_SET_ORG({payload}, { call, put }) {
       yield put(_mmAction('update',{

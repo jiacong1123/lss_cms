@@ -30,7 +30,6 @@ class List extends React.Component {
     // 处理分页
     handleTableChange = (pagination, filters, sorter) => {
       const { searchValue } =  this.props
-      console.log(searchValue);
       this.props.onSetCurrentPage(pagination.current)
       this.props.onGetAudioList({page: pagination.current, limit:pagination.pageSize,...searchValue})
     }
@@ -102,22 +101,22 @@ class List extends React.Component {
                   )
             }
           },
-          {
-            title: '类型',
-            key: 'type',
-            render: (text, record) => {
-              const { type } = record
-              return (
-              <div className={styles.operBtnBox}>
-                { type == 'OutBound_Call' ? '外呼电话' :''}
-                { type == 'OutBound_Unkown' ? '陌生去电' :''}
-                { type == 'InBound_Call' ? '客户电话' :''}
-                { type == 'InBound_Call_Channel' ? '渠道电话' :''}
-                { type == 'Unknow_Call' ? '陌生电话' :''}
-              </div>
-              )
-            }
-          },
+          // {
+          //   title: '类型',
+          //   key: 'type',
+          //   render: (text, record) => {
+          //     const { type } = record
+          //     return (
+          //     <div className={styles.operBtnBox}>
+          //       { type == 'OutBound_Call' ? '外呼电话' :''}
+          //       { type == 'OutBound_Unkown' ? '陌生去电' :''}
+          //       { type == 'InBound_Call' ? '客户电话' :''}
+          //       { type == 'InBound_Call_Channel' ? '渠道电话' :''}
+          //       { type == 'Unknow_Call' ? '陌生电话' :''}
+          //     </div>
+          //     )
+          //   }
+          // },
           {
             title: '状态',
             key: 'llResult',
@@ -146,7 +145,7 @@ class List extends React.Component {
             fixed: 'right',
             width: 278,
             render: (text, record) => {
-              const { lssRecordUrl, isPlay, duration } = record
+              const { lssRecordUrl, isPlay, duration, recordingUrl } = record
               return (
               <div className={styles.operBtnBox}>
                 { isPlay ? <Button type="danger" size="small" onClick={e => this.handlePauseAudio(record)}>暂停</Button> :

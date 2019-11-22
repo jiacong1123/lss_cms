@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 import withRouter from 'umi/withRouter'
 import router from 'umi/router'
 import store from 'store'
-import { BackTop, Layout, Icon ,Menu,Switch ,Avatar, Popover, Badge, List, Button, Modal, Input, message, notification  } from 'antd'
+import { BackTop, Layout, Icon ,Menu,Switch ,Avatar, Popover, Badge, List, Button, Modal, Input, message, notification, Dropdown } from 'antd'
 import moment from 'moment'
 import { Ellipsis } from 'ant-design-pro'
 import styles from './index.less'
@@ -65,7 +65,21 @@ class ComHeader extends PureComponent {
   handleMakeCall = (e) => {
     const { telphone } = this.state
     if (telphone) {
-      this.props.onBindCallPhone({ number: telphone, type: 'headerCall' })
+      if (e == 'carl') {
+        this.props.clearCurrentCallInfo()
+        return false
+        this.props.onBindCallPhone({ number: telphone, type: 'headerCall' })
+      } else {
+        let userinfo = store.get('userinfo')
+        const { ecUserId } = userinfo
+        let phone = telphone
+        if (!ecUserId) {
+            message.error('请先绑定EC账号!')
+            return false
+        }
+        this.props.carlCallPhone({ ecUserId, phone })
+      }
+
       this.setState({ visible: false, telphone: '' })
     } else {
       message.error('请先输入手机号码')
@@ -186,7 +200,8 @@ class ComHeader extends PureComponent {
                 <div>
                   <Input placeholder="请输入联系电话"  onChange={this.onChangeSearch.bind(this,'phone')}/>
                   <span className={styles.phone}>
-                    <MyIcon type="icondianhua" onClick={e => this.handleMakeCall()} title="拨号"/>
+                    {/* <MyIcon type="icondianhua" onClick={e => this.handleMakeCall('carl')} title="拨号"/> */}
+                    <MyIcon type="icondianhua" onClick={e => this.handleMakeCall('EC')} title="拨号"/>
                   </span>
                 </div>
               </Modal> : ''

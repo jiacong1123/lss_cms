@@ -49,19 +49,46 @@ class Filter extends React.Component {
                     <Row>
                         <Col span={4}>
                             <Form.Item label='员工姓名'>
-                                {getFieldDecorator('name', {
+                                {getFieldDecorator('adminName', {
                                     initialValue: searchValue && searchValue.adminName ? searchValue.adminName : ''
                                 })(
-                                    <Input placeholder="请输入姓名" />
+                                    <Input placeholder="请输入员工姓名" />
                                 )}
                             </Form.Item>
                         </Col>
                         <Col span={4}>
-                            <Form.Item label='员工手机'>
+                            <Form.Item label='客户姓名'>
+                                {getFieldDecorator('userName', {
+                                    initialValue: searchValue && searchValue.userName ? searchValue.userName : ''
+                                })(
+                                    <Input placeholder="请输入客户姓名" />
+                                )}
+                            </Form.Item>
+                        </Col>
+                        <Col span={4}>
+                            <Form.Item label='客户电话'>
                                 {getFieldDecorator('phone', {
-                                    initialValue: searchValue && searchValue.empNo ? searchValue.empNo : ''
+                                    initialValue: searchValue && searchValue.phone ? searchValue.phone : ''
                                 })(
                                     <Input placeholder="请输入电话" />
+                                )}
+                            </Form.Item>
+                        </Col>
+                        <Col span={4}>
+                            <Form.Item label='状态'>
+                                {getFieldDecorator('status', {
+                                     initialValue: searchValue && searchValue.status ? searchValue.status : ''
+                                })(
+                                    <Select
+                                        showSearch
+                                        placeholder="请选择"
+                                        style={{ width: 100 }}
+                                        onChange={this.handleChange.bind(this, 'status')}
+                                    >
+                                        <Option value="">请选择</Option>
+                                        <Option value="1">成功</Option>
+                                        <Option value="2">失败</Option>                                        
+                                    </Select>
                                 )}
                             </Form.Item>
                         </Col>

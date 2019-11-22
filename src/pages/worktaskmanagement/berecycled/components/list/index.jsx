@@ -1,6 +1,6 @@
 import React from 'react'
 import {
-    ConfigProvider, Table ,Modal,Button,Icon, Radio,Tooltip, Checkbox
+    ConfigProvider, Table ,Modal,Button,Icon, Radio,Tooltip, Checkbox, Menu, Dropdown, message
 } from 'antd';
 import store from 'store'
 import { DropOption } from 'components'
@@ -138,8 +138,19 @@ class List extends React.Component {
 
     // 拨打电话
     handleMakeCall = (record) => {
-      this.props.clearCurrentCallInfo()
-      this.props.onBindCallPhone(record)
+      if (name == 'carl') {
+        this.props.clearCurrentCallInfo()
+        this.props.onBindCallPhone(record)
+      } else {
+        let userinfo = store.get('userinfo')
+        const { ecUserId } = userinfo
+        if (!ecUserId) {
+            message.error('请先绑定EC账号!')
+            return false
+        }
+        this.props.carlCallPhone({...record, ecUserId})
+      }
+
     }
 
     //跳转IM聊天

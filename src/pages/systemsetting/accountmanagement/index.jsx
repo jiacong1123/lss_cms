@@ -46,6 +46,16 @@ const namespace = 'accountmanagement'
       )
     )
   },
+  //EC绑定电话号码
+  onBingECId(payload) {
+    dispatch(
+      _mmAction(
+        `${namespace}/EFFECTS_EC_BINDID`,
+        payload
+      )
+    )
+  },
+
   // 绑定号码
   onBindPhone(payload) {
     dispatch(
@@ -130,8 +140,12 @@ class Accountmanagement extends React.Component {
         // 角色设置
         this.props.onEditAdminRole({adminid,roleids:values})
       } else if (modalKey === 'bindphone') {
-        // 角色设置
+        // 卡尔绑定话机号码
         this.props.onBindPhone(values)
+      } else if (modalKey === 'bindECId') {
+        //EC绑定号码
+        console.log(values);
+        // this.props.
       }
   }
 

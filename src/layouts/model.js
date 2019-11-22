@@ -235,6 +235,18 @@ export default {
             }
         },
 
+        //EC拨打电话
+        * EFFECTS_CARL_CALLPHONE({payload}, { call, put , select}){
+          console.log(payload)
+            const { result, obj, msg } = yield call(service.carlPhone, payload);
+            if (result == 1 ) {
+                // console.log(obj)
+            } else {
+              message.error(msg)
+            }
+        },
+
+
         // 绑定外呼号码
         * EFFECTS_BINDCALLPHONE({payload}, { call, put , select}){
              console.log("111111111",payload);

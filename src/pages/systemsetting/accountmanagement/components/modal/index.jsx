@@ -3,6 +3,7 @@ import { Modal, Form, Row, Col, Input, Select, Checkbox } from 'antd';
 import ComSave from '../save'
 import ComRoleSetting from '../rolesetting'
 import ComBindPhone from '../bindphone'
+import ComBindECId from '../bindecid'
 import PropTypes from 'prop-types'
 import styles from './index.less'
 
@@ -34,20 +35,26 @@ class ComModal extends React.Component {
                     this.props.onOk(values)
                 }
             })
+       } else if (modalKey === 'bindECId') {
+         this.props.form.validateFields((err, values) => {
+             if (!err) {
+                 this.props.onOk(values)
+             }
+         })
        }
-       
+
     }
-    
+
     // 关闭模态框，清空表单
     onCancel = () => {
         this.props.onIsShowModal({visible:false,title:'',currentAdmin: {}})
     }
-    
+
     // 获取角色设置值
     getCheckedList = (checkedList) => {
         this.setState({checkedList})
     }
-    
+
     // 渲染modal的内容
     renderModalChildren = () => {
         const {  modalKey } = this.props
@@ -57,9 +64,11 @@ class ComModal extends React.Component {
             return <ComRoleSetting {...this.props} getCheckedList={this.getCheckedList}/>
         } else if( modalKey === 'bindphone' ) {
             return <ComBindPhone {...this.props}/>
+        } else if (modalKey === 'bindECId') {
+          return <ComBindECId {...this.props}/>
         }
     }
-    
+
 
     render() {
         const {  title, visible } = this.props

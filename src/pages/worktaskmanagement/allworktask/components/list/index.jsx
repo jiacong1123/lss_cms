@@ -1,9 +1,9 @@
 import React from 'react'
 import {
-    ConfigProvider, Table ,Modal,Avatar,Button,Icon, Radio, InputNumber,Form, Row, Col, DatePicker, Input, Tooltip, Checkbox
+    ConfigProvider, Table ,Modal,Avatar,Button,Icon, Radio, InputNumber,Form, Row, Col,
+    DatePicker, Input, Tooltip, Checkbox, Menu, Dropdown, message
 } from 'antd';
 import store from 'store'
-import { DropOption } from 'components'
 import styles from './index.less'
 import { parseTime } from 'utils/mm'
 import mixin from 'themes/mixin.less'
@@ -167,9 +167,19 @@ class PayForm extends React.Component {
     }
 
     // 拨打电话
-    handleMakeCall = (record) => {
-      this.props.clearCurrentCallInfo()
-      this.props.onBindCallPhone(record)
+    handleMakeCall = (record, name) => {
+      if (name == 'carl') {
+        this.props.clearCurrentCallInfo()
+        this.props.onBindCallPhone(record)
+      } else {
+        let userinfo = store.get('userinfo')
+        const { ecUserId } = userinfo
+        if (!ecUserId) {
+            message.error('请先绑定EC账号!')
+            return false
+        }
+        this.props.carlCallPhone({...record, ecUserId})
+      }
     }
 
     // 处理分页
@@ -422,8 +432,17 @@ class PayForm extends React.Component {
             render: (text, record) => {
               const { orderno,isclue } = record
               return (
-              <div className={styles.operBtnBox}>
-                <Button size="small" type="primary" onClick={e => this.handleMakeCall(record)}><Icon type="phone" /></Button>
+              <div>
+                <Dropdown overlay={
+                <Menu>
+                    {/*<Menu.Item key="1" onClick={ e => this.handleMakeCall(record, 'carl') } >卡尔话机</Menu.Item>*/}
+                    <Menu.Item key="2" onClick={ e => this.handleMakeCall(record, 'EC') } >EC话机</Menu.Item>
+                </Menu>
+                }>
+                <Button type="primary" size="small">
+                    <Icon type="phone" />
+                </Button>
+                </Dropdown>
               </div>
               )
             }
@@ -462,7 +481,7 @@ class PayForm extends React.Component {
       const { pagination, userTags, lastReceive, lastAmount } = this.state
       pagination['total'] = total
       pagination['current'] = currentPage
-    
+
       return (
         <div>
           <ConfigProvider>

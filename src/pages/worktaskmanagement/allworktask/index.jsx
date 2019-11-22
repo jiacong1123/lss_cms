@@ -73,7 +73,16 @@ let lablenames = ""
       )
     )
   },
-  // 绑定外呼号码并拨号
+  //EC拨打电话
+  carlCallPhone(payload) {
+    dispatch(
+      _mmAction(
+        `layout/EFFECTS_CARL_CALLPHONE`,
+        payload
+      )
+    )
+  },
+  // 卡尔绑定外呼号码并拨号
   onBindCallPhone(payload) {
     dispatch(
       _mmAction(

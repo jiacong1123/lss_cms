@@ -60,11 +60,30 @@ const { ComSider, ComHeader, Breadcrumbs, MessageBox } = MyLayout
         )
       )
     },
+    //EC拨打电话
+    carlCallPhone(payload) {
+      dispatch(
+        _mmAction(
+          `layout/EFFECTS_CARL_CALLPHONE`,
+          payload
+        )
+      )
+    },
     // 绑定外呼号码并拨号
     onBindCallPhone(payload) {
       dispatch(
         _mmAction(
           `${namespace}/EFFECTS_BINDCALLPHONE`,
+          payload
+        )
+      )
+    },
+    //清空当前拨号信息
+    clearCurrentCallInfo(payload) {
+      console.log(11);
+      dispatch(
+        _mmAction(
+          `layout/EFFECTS_CLEAR_CURRENTCALLINFO`,
           payload
         )
       )

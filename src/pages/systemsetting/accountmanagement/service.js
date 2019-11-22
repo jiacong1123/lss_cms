@@ -53,7 +53,7 @@ export const editAdminRole = (data) => {
   });
 }
 
-
+//卡尔绑定电话号码
 export const bindPhone = (data) => {
   return request({
     url: '/admin/bindPhone',
@@ -62,6 +62,17 @@ export const bindPhone = (data) => {
       "adminid":data.adminid,
       "callerNos": data.callerNos,
       "transferNo": data.transferNo
+    }
+  });
+}
+
+//EC绑定电话号码
+export const bingECId = (data) => {
+  return request({
+    url: '/admin/getEcUserId',
+    method: 'POST',
+    data: {
+      "phone": data.phone
     }
   });
 }

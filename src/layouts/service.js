@@ -106,6 +106,18 @@ export const getUserInfo= (data) => {
     })
   }
 
+//EC拨打电话
+export const carlPhone = (data) =>{
+    return request({
+      url: '/phone/ecCall',
+      method: 'POST',
+      data:{
+        "userId": data.ecUserId,
+        "callPhone": data.phone
+      }
+    })
+  }
+
 // 外呼号码绑定
 export const phoneBindCall = (data) =>{
     return request({

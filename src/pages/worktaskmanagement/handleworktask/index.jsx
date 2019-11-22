@@ -11,7 +11,7 @@ import {
   Timeline,
   Radio,
   Modal,
-  Checkbox,
+  Checkbox, Menu, Dropdown, message
 } from 'antd'
 import Tabsa from './components/tabsa'
 import Tabsb from './components/tabsb'
@@ -19,6 +19,7 @@ import Tabsc from './components/tabsc'
 import { _mmAction, _mmTimeToStamp, _mmAddressSplit} from 'utils/mm'
 import styles from './index.less'
 import mixin from 'themes/mixin.less'
+import store from 'store'
 
 const formItemLayout = {
   labelCol: {
@@ -112,6 +113,15 @@ let tagsName = []
     dispatch(
       _mmAction(
         `layout/EFFECTS_GET_PRODUCTDROPMENU`,
+        payload
+      )
+    )
+  },
+  //EC拨打电话
+  carlCallPhone(payload) {
+    dispatch(
+      _mmAction(
+        `layout/EFFECTS_CARL_CALLPHONE`,
         payload
       )
     )
@@ -247,8 +257,19 @@ class Handleworktask extends React.Component {
 
   // 拨打电话
   handleMakeCall = (orderdetail) => {
-    this.props.clearCurrentCallInfo()
-    this.props.onBindCallPhone(orderdetail)
+    if (name == 'carl') {
+      this.props.clearCurrentCallInfo()
+      this.props.onBindCallPhone(orderdetail)
+    } else {
+      let userinfo = store.get('userinfo')
+      const { ecUserId } = userinfo
+      let phone = orderdetail.user.phone
+      if (!ecUserId) {
+          message.error('请先绑定EC账号!')
+          return false
+      }
+      this.props.carlCallPhone({...orderdetail, ecUserId, phone})
+    }
   }
 
   //添加、编辑客户标签
@@ -351,8 +372,17 @@ class Handleworktask extends React.Component {
                   <Col span={6} >
                      <Form.Item label='电话号码:' {...formItemLayout}>
                        <span className={mixin.lightHeight}>{ user && user.phone ? user.phone : ''}</span>
-                       <Button style={{ marginLeft: 10 }} size="small" type="primary" onClick={e => this.handleMakeCall(orderdetail)}><Icon type="phone" /></Button>
-                     </Form.Item>
+                         <Dropdown overlay={
+                         <Menu>
+                             {/*<Menu.Item key="1" onClick={ e => this.handleMakeCall(orderdetail, 'carl') } >卡尔话机</Menu.Item>*/}
+                             <Menu.Item key="2" onClick={ e => this.handleMakeCall(orderdetail, 'EC') } >EC话机</Menu.Item>
+                         </Menu>
+                         }>
+                         <Button type="primary" size="small" style={{ marginLeft: 10 }}>
+                             <Icon type="phone" />
+                         </Button>
+                         </Dropdown>
+                       </Form.Item>
                   </Col>
                  <Col span={6} >
                       <Form.Item label='性别:' {...formItemLayout}>

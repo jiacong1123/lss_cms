@@ -54,9 +54,9 @@ export default {
     * effectsPlayAduio({payload}, { call, put , select}) {
       const currentPayload = yield select(({callrecord}) => callrecord.payload)
       const callRecordList = yield select(({callrecord}) => callrecord.callRecordList)
-      const { id, lssRecordUrl } =  payload ? payload : currentPayload
+      const { id, lssRecordUrl, recordingUrl } =  payload ? payload : currentPayload
       yield put(_mmAction('update',{
-         audioUrl: lssRecordUrl,
+         audioUrl: lssRecordUrl || recordingUrl,
          playing: true,
          payload,
          callRecordList:callRecordList.map(item=> item.id === id ? ({...item, isPlay: true}) : {...item,isPlay:false})
@@ -66,9 +66,9 @@ export default {
     * effectsPauseAudio({payload}, { call, put , select}) {
       const currentPayload = yield select(({callrecord}) => callrecord.payload)
       const callRecordList = yield select(({callrecord}) => callrecord.callRecordList)
-      const { id, lssRecordUrl } = payload ? payload : currentPayload
+      const { id, lssRecordUrl, recordingUrl } = payload ? payload : currentPayload
       yield put(_mmAction('update',{
-         audioUrl: lssRecordUrl,
+         audioUrl: lssRecordUrl || recordingUrl,
          playing: false,
          callRecordList:callRecordList.map(item=> item.id === id ? ({...item, isPlay: false}) :  {...item,isPlay:false})
       }))

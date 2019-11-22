@@ -12,7 +12,7 @@ import {
   Form,
   Modal,
   Radio,
-  Table
+  Table, Menu, Dropdown, message
 } from 'antd'
 import { connect } from 'dva'
 import classNames from 'classnames';
@@ -88,6 +88,7 @@ const customDot = (dot, { status }) =>
       )
     )
   },
+
   // 绑定外呼号码并拨号
   onBindCallPhone(payload) {
     dispatch(
@@ -177,8 +178,19 @@ class Worktaskdetail extends React.Component {
 
   // 拨打电话
   handleMakeCall = (orderdetail) => {
-    this.props.clearCurrentCallInfo()
-    this.props.onBindCallPhone(orderdetail)
+    if (name == 'carl') {
+      this.props.clearCurrentCallInfo()
+      this.props.onBindCallPhone(orderdetail)
+    } else {
+      let userinfo = store.get('userinfo')
+      const { ecUserId } = userinfo
+      let phone = orderdetail.user.phone
+      if (!ecUserId) {
+          message.error('请先绑定EC账号!')
+          return false
+      }
+      this.props.carlCallPhone({...orderdetail, ecUserId, phone})
+    }
   }
 
   render() {
@@ -245,7 +257,16 @@ class Worktaskdetail extends React.Component {
                   <Col span={6} >
                      <Form.Item label='电话号码:' {...formItemLayout}>
                        <span className={mixin.lightHeight}>{ user && user.phone ? user.phone : ''}</span>
-                        <Button style={{ marginLeft: 10 }} size="small" type="primary" onClick={e => this.handleMakeCall(orderdetail)}><Icon type="phone" /></Button>
+                       <Dropdown overlay={
+                       <Menu>
+                           {/*<Menu.Item key="1" onClick={ e => this.handleMakeCall(orderdetail, 'carl') } >卡尔话机</Menu.Item>*/}
+                           <Menu.Item key="2" onClick={ e => this.handleMakeCall(orderdetail, 'EC') } >EC话机</Menu.Item>
+                       </Menu>
+                       }>
+                       <Button type="primary" size="small" style={{ marginLeft: 10 }}>
+                           <Icon type="phone" />
+                       </Button>
+                       </Dropdown>
                      </Form.Item>
                   </Col>
                  <Col span={6} >

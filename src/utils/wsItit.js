@@ -4,7 +4,6 @@ function wsInit(val)  {
     //重连先关闭
 	if(val=='reConn'){
 		window.ws.close();
-	
 	}
 	if("WebSocket" in window) {
         // 打开一个 web socket，全局共用一个
