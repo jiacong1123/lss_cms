@@ -84,7 +84,7 @@ const namespace = 'callrecord'
   }
 }))
 
-class Callphonerecord extends React.Component {
+class WeChatRecord extends React.Component {
 
   state = {
     selectedRowKeys: [], // Check here to configure the default column
@@ -134,4 +134,4 @@ class Callphonerecord extends React.Component {
   }
 }
 
-export default Callphonerecord
+export default WeChatRecord

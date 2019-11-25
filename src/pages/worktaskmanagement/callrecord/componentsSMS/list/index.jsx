@@ -24,22 +24,18 @@ class List extends React.Component {
     }
 
 
-    handleMenuClick = () => {
-
-    }
-
     // 处理分页
     handleTableChange = (pagination, filters, sorter) => {
       const { searchValue } =  this.props
       this.props.onSetCurrentPage(pagination.current)
-      this.props.onGetWeChatList({ page: pagination.current, limit: pagination.pageSize,...searchValue})
+      this.props.onGetSMSList({ page: pagination.current, limit: pagination.pageSize,...searchValue,})
     }
 
     //改变每页条数
     onShowSizeChange = (current, pageSize) => {
       const { searchValue } =  this.props
       this.props.onSetCurrentSize(pageSize)
-      this.props.onGetOrderList({page: 1, limit:pageSize, ...searchValue })
+      this.props.onGetSMSList({page: 1, limit:pageSize, ...searchValue, })
     }
 
     render(){
@@ -140,7 +136,7 @@ class List extends React.Component {
       return (
           <ConfigProvider>
               <Table
-                 // rowSelection={rowSelection}
+                  //rowSelection={rowSelection}
                  columns={columns}
                  dataSource={SMSRecordList}
                  bordered

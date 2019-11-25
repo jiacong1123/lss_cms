@@ -9,6 +9,7 @@ import styles from '../index.less'
 import Audio from '../componentsSMS/audio'
 
 const namespace = 'callrecord'
+const parentNamespace = 'worktaskmanagement'
 
 @connect(({layout,worktaskmanagement,callrecord}) => ({
   ...worktaskmanagement,
@@ -89,10 +90,11 @@ const namespace = 'callrecord'
         payload
       )
     )
-  }
+  },
+
 }))
 
-class Callphonerecord extends React.Component {
+class SMSRecord extends React.Component {
 
   state = {
     selectedRowKeys: [], // Check here to configure the default column
@@ -100,6 +102,8 @@ class Callphonerecord extends React.Component {
   }
 
   onSelectChange = (selectedRowKeys,e) => {
+    //当前勾选的列表
+    this.props.onSaveSelected(e)
     const ordernos = e.map(item=>item['orderno'])
     this.setState({ selectedRowKeys, ordernos});
   }
@@ -111,7 +115,14 @@ class Callphonerecord extends React.Component {
 
   // 点击modal确定按钮并处理请求
   onModalOk = (values) => {
+    const { modalKey, orderno, messageContent, selectedList } = this.props
+    const { ordernos, selectedRowKeys } = this.state
 
+    if (modalKey === 'sendMessage') {
+      const phone = selectedList.map(item=>item['phone'])
+      this.props.sendMessage({...values, phone, messageContent})
+      this.setState({ selectedRowKeys:[], ordernos:[]})
+    }
   }
 
   render() {
@@ -124,9 +135,14 @@ class Callphonerecord extends React.Component {
     const hasSelected = selectedRowKeys.length > 0;
     return (
       <div className={styles.newdistributionPage}>
-         {/* <Filter {...this.props}/> */}
          <div className={styles.tableListBox}>
-
+         <Filter {...this.props}/>
+         <Oper
+             cleanSelectedKeys={this.cleanSelectedKeys}
+             selectedRowKeys={selectedRowKeys}
+             hasSelected={hasSelected}
+             {...this.props}
+           />
           <List
               rowSelection={rowSelection}
               {...this.props}
@@ -135,11 +151,10 @@ class Callphonerecord extends React.Component {
             {...this.props}
             onOk={this.onModalOk}
           />
-          { audioUrl ? <Audio {...this.props}></Audio> : '' }
           </div>
       </div>
     )
   }
 }
 
-export default Callphonerecord
+export default SMSRecord

@@ -34,16 +34,27 @@ export const getTags= (data) => {
     })
 }
 
-export const getPersonnel= (data) => {
+  //所属人员列表(不带权限)
+  export const getPersonnel= (data) => {
+      return request({
+          url: '/admin/personnel',
+          method:'POST',
+          data:{
+            "roleid": data.roleid,
+            "clinicid": data.clinicid
+          }
+      })
+  }
+  //所属人员列表(权限)
+  export const personnelList= (data) => {
     return request({
-        url: '/admin/personnel',
-        method:'POST',
-        data:{
-          "roleid": data.roleid,
-          "clinicid": data.clinicid
-        }
+      url: '/admin/personnelList',
+      method: 'POST',
+      data:{
+
+      }
     })
-}
+  }
 
 export const getDoctorDropmenu= (data) => {
     return request({
@@ -185,16 +196,6 @@ export const phoneBindCall = (data) =>{
     })
   }
 
-  //获取所属人员列表
-    export const personnelList= (data) => {
-      return request({
-        url: '/admin/personnelList',
-        method: 'POST',
-        data:{
-
-        }
-      })
-    }
 
 //
 export const getReserveCount= (data) => {

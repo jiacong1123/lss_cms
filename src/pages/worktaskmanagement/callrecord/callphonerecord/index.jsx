@@ -125,7 +125,7 @@ class Callphonerecord extends React.Component {
               selectedRowKeys={selectedRowKeys}
               hasSelected={hasSelected}
               {...this.props}
-            />
+            /> 
           <List
               rowSelection={rowSelection}
               {...this.props}

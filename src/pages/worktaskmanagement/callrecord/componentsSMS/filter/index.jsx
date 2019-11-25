@@ -5,6 +5,7 @@ import {
 import city from 'utils/city'
 import styles from './index.less'
 import moment from 'moment'
+import store from 'store'
 
 const Option = Select.Option;
 
@@ -16,14 +17,14 @@ class Filter extends React.Component {
         validateFields((err, values) => {
             if (!err) {
                 this.props.onGetSearchValue(values)
-                this.props.onGetAudioList({ ...values, page: 1, limit: 10 })
+                this.props.onGetSMSList({ ...values, page: 1, limit: 10, })
             }
         })
     }
 
     handleReset = () => {
         this.props.onResetSearchValue()
-        this.props.onGetAudioList({ page: 1, limit: 10 })
+        this.props.onGetSMSList({ page: 1, limit: 10, })
         this.props.form.resetFields()
     }
 
@@ -35,11 +36,11 @@ class Filter extends React.Component {
         fields[key] = values
         // 查询数据
         this.props.onGetSearchValue(fields)
-        this.props.onGetAudioList({ ...fields, page: 1, limit: 10 })
+        this.props.onGetSMSList({ ...fields, page: 1, limit: 10, })
     }
 
     render() {
-        const { form, clinicdropmenu, searchValue } = this.props
+        const { form, clinicdropmenu, searchValue, personnelList } = this.props
         const { getFieldDecorator } = form
         return (
             <div className={styles.serchBox}>
@@ -47,15 +48,26 @@ class Filter extends React.Component {
                     layout='inline'
                 >
                     <Row>
-                        <Col span={4}>
-                            <Form.Item label='员工姓名'>
-                                {getFieldDecorator('adminName', {
-                                    initialValue: searchValue && searchValue.adminName ? searchValue.adminName : ''
-                                })(
-                                    <Input placeholder="请输入员工姓名" />
-                                )}
-                            </Form.Item>
-                        </Col>
+                    <Col span={4}>
+                         <Form.Item label='所属人员'>
+                            {getFieldDecorator('adminid', {
+                                initialValue: searchValue && searchValue.adminid ? searchValue.adminid : ''
+                            })(
+                                <Select
+                                    showSearch
+                                    style={{ width: 180 }}
+                                    placeholder="请选择所属人员"
+                                    optionFilterProp="children"
+                                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                                >
+                                    <Option key='' value=''>选择所属人员</Option>
+                                    { personnelList && personnelList.length > 0 ? personnelList.map(item => {
+                                        return <Option key={item.adminid} value={item.adminid}>{item.name}</Option>
+                                    }) : null}
+                                </Select>,
+                            )}
+                        </Form.Item>
+                    </Col>
                         <Col span={4}>
                             <Form.Item label='客户姓名'>
                                 {getFieldDecorator('userName', {
@@ -85,9 +97,9 @@ class Filter extends React.Component {
                                         style={{ width: 100 }}
                                         onChange={this.handleChange.bind(this, 'status')}
                                     >
-                                        <Option value="">请选择</Option>
+                                        <Option value="">全部</Option>
                                         <Option value="1">成功</Option>
-                                        <Option value="2">失败</Option>                                        
+                                        <Option value="2">失败</Option>
                                     </Select>
                                 )}
                             </Form.Item>

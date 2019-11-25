@@ -51,6 +51,7 @@ export default {
     defaultLabels: [],
     messageTemplateList: [],  //短信模板
     messageContent: '',      //短信内容
+
   },
 
   effects: {
@@ -251,6 +252,16 @@ export default {
         })
     },
 
+        //设置tableKey
+        * EFFECTS_SET_TABLEKEY({payload}, { call, put , select}){
+          yield put({
+            type: 'SET_TABLEKEY',
+            payload: {
+              tableKey: payload
+            }
+          })
+        },
+
   },
 
   reducers: {
@@ -270,6 +281,9 @@ export default {
       return { ...state, ...payload }
     },
     GET_PAYMENTRECORDS(state, { payload }) {
+      return { ...state, ...payload }
+    },
+    SET_TABLEKEY(state, { payload }) {
       return { ...state, ...payload }
     },
   },

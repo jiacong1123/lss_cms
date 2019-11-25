@@ -26,6 +26,8 @@ export default {
     SMSRecordList: [],    //短信消息列表
     empNo: '',
     currentSize: 10,  //每页大小
+    selectedList: [],
+
   },
 
   effects: {
@@ -167,10 +169,40 @@ export default {
        })
      },
 
+     * EFFECTS_ONSAVE_SELECTED({payload}, { call, put , select}){
+       yield put({
+         type: 'SET_SELECTEDLIST',
+         payload: {
+           selectedList: payload
+         }
+       })
+     },
+
+     //发送短信
+     * EFFECTS_SENDMESSAGE({payload}, { call, put , select}){
+       const currentPage = yield select(({callrecord}) => callrecord.currentPage)
+       const currentSize = yield select(({callrecord}) => callrecord.currentSize)
+       yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
+       const { result, obj, msg } = yield call(callrecordApi.sendMessage, {...payload});
+       if (result === 1 ) {
+         yield put(_mmAction('effectsGetSMSRecordList',{
+           page: currentPage,
+           limit: currentSize,
+         }))
+         yield put(_mmAction('IS_SHOWMODAL',{visible: false, title: ''}))
+         message.success(msg,5)
+       } else {
+         message.error(msg,5)
+         yield put(_mmAction('IS_SHOWLOADING',{loading: false}))
+       }
+     },
 
   },
 
   reducers: {
+    IS_SHOWMODAL(state, { payload }) {
+      return { ...state, ...payload }
+    },
     update(state, { payload }) {
       return { ...state, ...payload }
     },
@@ -181,6 +213,9 @@ export default {
       return { ...state, ...payload }
     },
     SET_CURRENTSIZE(state, { payload }) {
+      return { ...state, ...payload }
+    },
+    SET_SELECTEDLIST(state, { payload }) {
       return { ...state, ...payload }
     },
   },

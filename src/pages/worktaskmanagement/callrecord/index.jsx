@@ -13,6 +13,7 @@ import store from 'store'
 const TabPane = Tabs.TabPane;
 
 const namespace = 'callrecord'
+const parentNamespace = 'worktaskmanagement'
 
 @connect(({callrecord}) => ({
   ...callrecord,
@@ -70,23 +71,62 @@ const namespace = 'callrecord'
       )
     )
   },
+  onSaveSelected(payload){
+    dispatch(
+      _mmAction(
+        `${namespace}/EFFECTS_ONSAVE_SELECTED`,
+        payload
+      )
+    )
+  },
+  //获取短信模板列表
+  getMessageList(payload){
+    dispatch(
+      _mmAction(
+        `${parentNamespace}/EFFECTS_MESSAGE_TEMPLATELIST`,
+        payload
+      )
+    )
+  },
+  //根据模板id 获取短信内容
+  getMessageContent(payload){
+    dispatch(
+      _mmAction(
+        `${parentNamespace}/EFFECTS_MESSAGE_CONTENT`,
+        payload
+      )
+    )
+  },
+
+  //清空短信内容
+  clearMessageContent(payload){
+    dispatch(
+      _mmAction(
+        `${parentNamespace}/EFFECTS_CLEAR_MESSAGECONTENT`,
+        payload
+      )
+    )
+  },
+  //发送短信
+  sendMessage(payload){
+    dispatch(
+      _mmAction(
+        `${namespace}/EFFECTS_SENDMESSAGE`,
+        payload
+      )
+    )
+  },
+
+
 }))
 
 class Callrecord extends React.Component {
 
-  componentDidMount = () => {
-
-  }
-
-  handleTabChange = (e) => {
-    const userinfo = store.get('userinfo')
-    const { name } = userinfo
-
+  handleTabChange = (e) => {    
     if (e == 1){ //通话记录
 
     } else if(e == 2) {   //短信管理
-      this.props.onGetSMSList({ page: 1, limit: 10, name})
-
+      this.props.onGetSMSList({ page: 1, limit: 10, })
     } else {    //微信聊天记录
       const merchantNo = userinfo.guidMember.memberNoMerchant
       this.props.onGetWeChatList({ page: 0, limit: 10, merchantNo})

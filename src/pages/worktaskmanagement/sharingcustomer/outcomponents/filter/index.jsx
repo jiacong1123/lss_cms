@@ -45,7 +45,7 @@ class Filter extends React.Component {
                   searchTag = values.tag.join(',')
                 }
                 this.props.onGetSearchValue(values)
-                this.props.onGetOrderList({ ...values, page: 1, limit: currentSize, searchTag: searchTag })
+                this.props.getSharingOutList({ ...values, page: 1, limit: currentSize, searchTag: searchTag })
             }
         })
     }
@@ -53,7 +53,7 @@ class Filter extends React.Component {
     handleReset = () => {
         const { currentSize } = this.props
         this.props.onResetSearchValue()
-        this.props.onGetOrderList({ page: 1, limit: currentSize })
+        this.props.getSharingOutList({ page: 1, limit: currentSize })
         this.props.form.resetFields()
     }
 
@@ -65,7 +65,7 @@ class Filter extends React.Component {
       fields[key] = values
       // 查询数据
       this.props.onGetSearchValue(fields)
-      this.props.onGetOrderList({ ...fields, page: 1, limit: currentSize })
+      this.props.getSharingOutList({ ...fields, page: 1, limit: currentSize })
     }
 
     handleChange = (key, values) => {
@@ -104,7 +104,7 @@ class Filter extends React.Component {
 
         console.log(fields)
         this.props.onGetSearchValue(fields)
-        this.props.onGetOrderList({ ...fields, page: 1, limit: currentSize,})
+        this.props.getSharingOutList({ ...fields, page: 1, limit: currentSize,})
     }
 
     render() {

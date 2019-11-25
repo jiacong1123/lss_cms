@@ -196,14 +196,14 @@ class PayForm extends React.Component {
     handleTableChange = (pagination, filters, sorter) => {
       const { searchValue } =  this.props
       this.props.onSetCurrentPage(pagination.current)
-      this.props.onGetOrderList({page: pagination.current, limit:pagination.pageSize,...searchValue })
+      this.props.getSharingOutList({page: pagination.current, limit:pagination.pageSize,...searchValue })
     }
 
     //改变每页条数
     onShowSizeChange = (current, pageSize) => {
       const { searchValue } =  this.props
       this.props.onSetCurrentSize(pageSize)
-      this.props.onGetOrderList({page: 1, limit:pageSize, ...searchValue })
+      this.props.getSharingOutList({page: 1, limit:pageSize, ...searchValue })
     }
 
     //添加、编辑客户标签
@@ -464,7 +464,7 @@ class PayForm extends React.Component {
                   {status === 4 ? <Button size="small" onClick={e => this.handleCharge(record)}>收费登记</Button> : ''}
                   <Button size="small" onClick={e => this.handleMenuClick(orderno, 1)}>编辑</Button>
                   <Button size="small" onClick={e => this.handleMenuClick(orderno, 3, record)}>详情</Button>
-                  <Button size="small" onClick={e => this.handleMenuClick(orderno, 10, record)}>取消共享</Button>
+                  {/*<Button size="small" onClick={e => this.handleMenuClick(orderno, 10, record)}>取消共享</Button>*/}
                 </div>
               )
             }

@@ -254,6 +254,22 @@ let lablenames = ""
     )
   },
 
+  //记录tableKey
+  setTableKey(payload){
+    dispatch(
+      _mmAction(
+        `${parentNamespace}/EFFECTS_SET_TABLEKEY`,
+        payload
+      ),
+    ),
+    dispatch(
+      _mmAction(
+        `${namespace}/EFFECTS_SET_TABLEKEY`,
+        payload
+      ),
+    )
+  },
+
 }))
 
 
@@ -320,6 +336,8 @@ class sharingcustomer extends React.Component {
   }
 
   handleTabChange = (e) => {
+    this.props.setTableKey(e)
+    this.props.onResetSearchValue()
     if (e == 1){ //
       this.props.onGetOrderList({ page: 1, limit: 10})
     } else if(e == 2) {   //
@@ -328,7 +346,8 @@ class sharingcustomer extends React.Component {
   }
 
   render() {
-    const {  selectedRowKeys } = this.state;
+    const {  selectedRowKeys, urlParams, } = this.state;
+    const { tableKey } = this.props
     const rowSelection = {
       selectedRowKeys,
       onChange: this.onSelectChange,
@@ -338,10 +357,11 @@ class sharingcustomer extends React.Component {
       //   status: record.status ,
       // }),
     };
+    console.log(tableKey);
     const hasSelected = selectedRowKeys.length > 0;
     return (
       <div className={styles.sharingcustomerPage}>
-        <Tabs defaultActiveKey="1" animated={false} onChange={this.handleTabChange}>
+        <Tabs defaultActiveKey={ tableKey } animated={false} onChange={this.handleTabChange}>
           <TabPane tab="共享给我的客户" key="1">
               <SharingIn {...this.props}></SharingIn>
           </TabPane>

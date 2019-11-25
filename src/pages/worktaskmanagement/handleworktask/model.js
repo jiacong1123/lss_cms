@@ -42,7 +42,8 @@ export default {
     // 立即预约
     * EFFECTS_RESERVE_ORDER({payload}, { call, put,  select }) {
       const urlParams = yield select(({worktaskmanagement}) => worktaskmanagement.urlParams)
-
+      const tableKey = yield select(({worktaskmanagement}) => worktaskmanagement.tableKey)
+      console.log(tableKey);
       // const orderno = yield select(({worktaskmanagement}) => worktaskmanagement.orderno)
       const orderno = urlParams.orderno
       yield put(_mmAction(`${parentNamespace}/IS_SHOWLOADING`,{loading: true}))
@@ -64,7 +65,10 @@ export default {
           } else if (urlParams.type == 'allworktask') {
             router.push({ pathname: '/worktaskmanagement/allworktask' })
           } else if (urlParams.type == 'sharingCustomer' || urlParams.type == 'sharingOut') {
-            router.push({ pathname: '/worktaskmanagement/sharingCustomer' })
+            router.push({
+              pathname: '/worktaskmanagement/sharingCustomer',
+              query:  { tableKey }
+            })
           } else {
             router.push({ pathname: '/worktaskmanagement/waitfollowup' })
           }
@@ -403,7 +407,6 @@ export default {
   subscriptions: {
     setupHistory({ dispatch, history }) {
         const params = history.location.query
-        console.log(params);
       return history.listen(({ pathname }) => {
         if( pathname === '/worktaskmanagement/handleworktask') {
           const { orderno, key, type } = history.location.query

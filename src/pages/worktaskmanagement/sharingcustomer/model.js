@@ -20,6 +20,7 @@ export default {
     userTags:[],
     selectedList: [],
     currentSize: 10,  //每页大小
+    tableKey: '',    //
   },
 
   effects: {
@@ -47,7 +48,7 @@ export default {
       }
     },
 
-    // 获取共享出去de 工单列表
+    // 获取我共享出去 工单列表
     * EFFECTS_SHARINGOUT_LIST({payload}, { call, put,select }) {
       yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
       const searchValue = !payload.initEntry ? yield select(({sharingcustomer}) => sharingcustomer.searchValue) : {}
@@ -76,14 +77,15 @@ export default {
       yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
       const searchValue = !payload.initEntry ? yield select(({sharingcustomer}) => sharingcustomer.searchValue) : {}
       const currentPage = yield select(({sharingcustomer}) => sharingcustomer.currentPage)
+      const currentSize = yield select(({sharingcustomer}) => sharingcustomer.currentSize)
       const {page} = payload
       currentPage ? payload.page = currentPage : payload.page
       const { result, obj , total, msg  } = yield call(sharingcustomerApi.cancleSharing, payload)
       if (result === 1) {
           message.success('操作成功!')
         yield put(_mmAction('EFFECTS_SHARINGOUT_LIST',{
-          page:currentPage,
-          limit: 10,
+          page: currentPage,
+          limit: currentSize,
         }))
           yield put(_mmAction('IS_SHOWMODAL',{visible: false, title: ''}))
         yield put(_mmAction('IS_SHOWLOADING',{loading: false}))
@@ -319,10 +321,11 @@ export default {
       let ordernos = payload.ordernos ? payload.ordernos.join(',') : ''
       const currentPage = yield select(({sharingcustomer}) => sharingcustomer.currentPage)
       const currentSize = yield select(({sharingcustomer}) => sharingcustomer.currentSize)
+
       yield put(_mmAction('IS_SHOWLOADING',{loading: true}))
       const { result, obj, msg } = yield call(sharingcustomerApi.closeOrder, {...payload,ordernos});
       if (result === 1 ) {
-        yield put(_mmAction('EFFECTS_GET_ORDERLIST',{
+        yield put(_mmAction('EFFECTS_SHARINGOUT_LIST',{
           page:currentPage,
           limit: currentSize,
         }))
@@ -351,6 +354,16 @@ export default {
         message.error(msg,5)
         yield put(_mmAction('IS_SHOWLOADING',{loading: false}))
       }
+    },
+
+    //设置tableKey
+    * EFFECTS_SET_TABLEKEY({payload}, { call, put , select}){
+      yield put({
+        type: 'SET_TABLEKEY',
+        payload: {
+          tableKey: payload
+        }
+      })
     },
 
   },
@@ -392,21 +405,39 @@ export default {
     SET_CURRENTSIZE(state, { payload }) {
       return { ...state, ...payload }
     },
+    SET_TABLEKEY(state, { payload }) {
+      return { ...state, ...payload }
+    },
+
   },
 
   subscriptions: {
     setup({ dispatch, history }) {
       return history.listen(({ pathname }) => {
+        console.log(history)
+        const { tableKey } = history.location.query
         // 路由切换初始化数据
         if ( pathname === '/worktaskmanagement/sharingCustomer'){
-          dispatch({
-            type: 'EFFECTS_GET_ORDERLIST',
-            payload: {
-              page:1,
-              limit: 10,
-              initEntry: false,
-            }
-          })
+          if (tableKey && tableKey == '2') {
+            dispatch({
+              type: 'EFFECTS_SHARINGOUT_LIST',  //我共享的列表
+              payload: {
+                page:1,
+                limit: 10,
+                initEntry: false,
+              }
+            })
+          } else {
+            dispatch({
+              type: 'EFFECTS_GET_ORDERLIST',  //共享给我的列表
+              payload: {
+                page:1,
+                limit: 10,
+                initEntry: false,
+              }
+            })
+          }
+
         }
       })
     }

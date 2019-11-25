@@ -647,7 +647,7 @@ export default {
             // 监听拨打电话状态
             window.ws.onmessage = (evt)=> {
                 var data = JSON.parse(evt.data);
-                  console.log(data)
+                  // console.log(data)
                 // 拨号成功
                 if ( data['cmd'] === 'ATD' && data['success'] ) {
                 dispatch({ type: 'EFFECTS_SET_CALLTYPE',

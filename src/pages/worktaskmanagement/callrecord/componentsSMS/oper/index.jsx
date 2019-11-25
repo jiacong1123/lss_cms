@@ -10,6 +10,10 @@ import {_mmStampToTime} from 'utils/mm'
 class Oper extends React.Component {
 
     onShowModal = (title,modalKey) => {
+        if (modalKey == 'sendMessage') {
+          this.props.getMessageList()
+          this.props.clearMessageContent()
+        }
         this.props.onIsShowModal({
             visible:true,
             title,
@@ -32,8 +36,9 @@ class Oper extends React.Component {
         const { hasSelected, selectedRowKeys, cleanSelectedKeys } = this.props
         return (
             <div className={styles.oper}>
-                <Button type="primary" icon="plus" onClick={this.onShowModal.bind(this,'新增工单','add')}>新增工单</Button>
-                {/* <Dropdown overlay={
+              {/* <Button type="primary" onClick={this.onShowModal.bind(this,'发送短信','sendMessage')}>发送短信</Button>
+              <Button type="primary" icon="plus" onClick={this.onShowModal.bind(this,'新增工单','add')}>新增工单</Button>
+              <Dropdown overlay={
                 <Menu>
                     <Menu.Item key="2" onClick={this.onShowModal.bind(this,'发送短信','sendMessage')}>发送短信</Menu.Item>
                 </Menu>
@@ -41,7 +46,7 @@ class Oper extends React.Component {
                 <Button type="primary">
                     批量处理<Icon type="down" />
                 </Button>
-                </Dropdown> */}
+                </Dropdown>*/}
                 <br /> <br />
                 <div>
                 <Alert message={

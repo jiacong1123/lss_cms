@@ -55,7 +55,7 @@ class ComBatch extends React.Component {
                   checkedList.map( (item,index) => {
                     return <div>
                               <li>
-                                {item.name}
+                                {item.userName}
                                 <span className={styles.close}><Button onClick={e => this.handleClose(item,index)} type="link"  icon="close" /></span>
                               </li>
                            </div>

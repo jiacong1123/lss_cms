@@ -79,16 +79,35 @@ class Callphonerecord extends React.Component {
   // 点击modal确定按钮并处理请求
   onModalOk = (values) => {
     const { modalKey, orderno, currentOrder,userid, sourceChild, selectedList } = this.props
+    const ordernos = selectedList.map(item=>item['orderno'])
     if (modalKey === 'sendMessage') {
       const { messageContent } = this.props
       const phone = selectedList.map(item=>item['phone'])
       this.props.sendMessage({...values,phone,messageContent})
       this.setState({ selectedRowKeys:[], ordernos:[]})
     } else if (modalKey === 'cancleOrder') {
-      const ordernos = selectedList.map(item=>item['orderno'])
       //批量取消共享
       this.props.onCancleSharing({...values,ordernos})
       this.setState({ selectedRowKeys:[], ordernos:[]})
+    } else if (modalKey === 'edit') {
+      // 编辑门诊
+      if(sourceChild && tagname) {
+        this.props.onSaveOrder({...values,orderno,userid: currentOrder['userid'],tagname})
+      } else {
+        this.props.onSaveOrder({...values,orderno,userid: currentOrder['userid']})
+      }
+
+    } else if (modalKey === 'batch') {
+      // 批量转移
+      this.props.onGetBatchOrder({...values,ordernos})
+      this.setState({ selectedRowKeys:[], ordernos:[]})
+
+    } else if (modalKey === 'single') {
+      // 单个转移
+      this.props.onGetBatchOrder({...values,ordernos:[orderno]})
+    } else if (modalKey === 'close') {
+      //批量关闭
+      this.props.onCloseOrder({...values,ordernos})
     }
 
   }
